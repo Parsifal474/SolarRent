@@ -1,4 +1,6 @@
-﻿using SolarRent.Core.Models;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using SolarRent.Core.Models;
 using SolarRent.SolarRent.Core.Models;
 
 namespace SolarRent.Core.Services

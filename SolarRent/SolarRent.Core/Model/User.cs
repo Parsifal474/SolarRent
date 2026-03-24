@@ -1,7 +1,15 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
 
-namespace SolarRent.SolarRent.Model
+namespace SolarRent.Core.Models
 {
+    public enum Role
+    {
+        Manager,
+        Warehouse,
+        Director,
+        Accountant
+    }
+
     public class User
     {
         public int Id { get; set; }
@@ -11,7 +19,7 @@ namespace SolarRent.SolarRent.Model
         public string Login { get; set; } = string.Empty;
         [Required]
         public string PasswordHash { get; set; } = string.Empty;
-        public Role Role { get; set; } // Manager, Warehouse, Director, Accountant
+        public Role Role { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 

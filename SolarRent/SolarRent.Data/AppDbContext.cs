@@ -3,7 +3,7 @@ using SolarRent.Core.Models;
 using SolarRent.Model;
 using System.Reflection.Emit;
 
-namespace SolarRent.SolarRent.Data
+namespace SolarRent.Data
 {
     public class AppDbContext : DbContext
     {

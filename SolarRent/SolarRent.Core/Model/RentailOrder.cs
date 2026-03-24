@@ -1,7 +1,7 @@
-﻿using SolarRent.Core.Models; 
+﻿using SolarRent.Core.Models;
 using System;
 
-namespace SolarRent.SolarRent.Core.Models
+namespace SolarRent.Core.Models
 {
     public class RentalOrder
     {

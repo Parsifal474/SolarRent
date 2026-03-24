@@ -1,4 +1,5 @@
-﻿// SolarRent.Data/Repositories/Repository.cs
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using SolarRent.SolarRent.Data;
 using SolarRent.SolarRent.Data.Repositories;

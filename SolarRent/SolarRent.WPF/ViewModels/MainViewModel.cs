@@ -11,19 +11,32 @@ namespace SolarRent.WPF.ViewModels
 
         public MainViewModel()
         {
-            // Здесь можно инициализировать сервисы через DI
+            // Пока без сервисов
         }
 
         [RelayCommand]
-        private void OpenCatalog() => CurrentView = new CatalogView();
+        private void OpenCatalog()
+        {
+            // Временная заглушка
+            CurrentView = new TextBlock { Text = "Каталог (в разработке)" };
+        }
 
         [RelayCommand]
-        private void OpenRental() => CurrentView = new RentalView();
+        private void OpenRental()
+        {
+            CurrentView = new TextBlock { Text = "Аренда (в разработке)" };
+        }
 
         [RelayCommand]
-        private void OpenClients() => CurrentView = new ClientsView();
+        private void OpenClients()
+        {
+            CurrentView = new TextBlock { Text = "Клиенты (в разработке)" };
+        }
 
         [RelayCommand]
-        private void OpenReports() => CurrentView = new ReportsView();
+        private void OpenReports()
+        {
+            CurrentView = new TextBlock { Text = "Отчеты (в разработке)" };
+        }
     }
 }

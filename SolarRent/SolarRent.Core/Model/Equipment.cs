@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using SolarRent.Core.Models;
+using System.Collections.Generic;
 using SolarRent.Core.Models;
 
-namespace SolarRent.SolarRent.Core.Models
+namespace SolarRent.Core.Models
 {
     public enum EquipmentType
     {
@@ -16,7 +17,7 @@ namespace SolarRent.SolarRent.Core.Models
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public EquipmentType Type { get; set; }
-        public double Power { get; set; } // в кВт
+        public double Power { get; set; }
         public decimal Price { get; set; }
         public string Status { get; set; } = "InStock"; // InStock, Rented, Repair, Disposed
         public string? Description { get; set; }

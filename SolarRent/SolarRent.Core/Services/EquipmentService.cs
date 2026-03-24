@@ -1,8 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SolarRent.Core.Models;
 using SolarRent.Data.Repositories;
-using SolarRent.SolarRent.Core.Models;
-using SolarRent.SolarRent.Data.Repositories;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SolarRent.Core.Services
 {
