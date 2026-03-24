@@ -8,4 +8,11 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="SolarRent.Data\Repositor\**" />
+    <EmbeddedResource Remove="SolarRent.Data\Repositor\**" />
+    <None Remove="SolarRent.Data\Repositor\**" />
+    <Page Remove="SolarRent.Data\Repositor\**" />
+  </ItemGroup>
+
 </Project>
