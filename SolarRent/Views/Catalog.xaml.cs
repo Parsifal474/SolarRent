@@ -1,5 +1,6 @@
 ﻿using System.Windows;
-using SolarRent.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
+using SolarRent.Data;
 
 namespace SolarRent
 {
@@ -8,20 +9,14 @@ namespace SolarRent
         public Catalog()
         {
             InitializeComponent();
-            DataContext = new CatalogViewModel();
         }
 
         private void AddEquipmentButton_Click(object sender, RoutedEventArgs e)
         {
-            var addEquipmentWindow = new AddEquipmentWindow();
-            var result = addEquipmentWindow.ShowDialog();
-
-            if (result == true)
-            {
-                // Оборудование добавлено, можно обновить список
-                MessageBox.Show("Оборудование добавлено!", "Успех",
-                    MessageBoxButton.OK, MessageBoxImage.Information);
-            }
+            // 🔹 Правильное обращение к статическому свойству
+            var dbContext = App.Services.GetRequiredService<AppDbContext>();
+            var addEquipmentWindow = new AddEquipmentWindow(dbContext);
+            addEquipmentWindow.ShowDialog();
         }
     }
 }
