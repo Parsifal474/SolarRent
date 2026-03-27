@@ -363,7 +363,7 @@
                         <Button Content="Календарь аренды" Style="{StaticResource QuickActionButton}" Click="CalendarButton_Click"/>
                         <Button Content="Добавить клиента" Style="{StaticResource QuickActionButton}" Click="AddClientButton_Click"/>
                         <Button Content="Новая аренда" Style="{StaticResource QuickActionButton}"/>
-                        <Button Content="Отчеты" Style="{StaticResource QuickActionButton}"/>
+                        <Button Content="Отчеты" Style="{StaticResource QuickActionButton}" Click="ReportsButton_Click"/> 
                         <Button Content="Каталог" Style="{StaticResource QuickActionButton}" Click="CatalogButton_Click"/>
                     </StackPanel>
                 </Grid>

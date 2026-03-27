@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using SolarRent.Views;
 
 namespace SolarRent
 {
@@ -38,6 +39,12 @@ namespace SolarRent
         {
             var calendarWindow = new RentalCalendar();
             calendarWindow.Show();
+        }
+
+        private void ReportsButton_Click(object sender, RoutedEventArgs e)
+        {
+            var reportsWindow = new Reports();
+            reportsWindow.Show();
         }
     }
 }
