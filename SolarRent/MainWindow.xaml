@@ -361,7 +361,7 @@
 
                     <StackPanel Grid.Row="1">
                         <Button Content="Календарь аренды" Style="{StaticResource QuickActionButton}"/>
-                        <Button Content="Добавить клиента" Style="{StaticResource QuickActionButton}"/>
+                        <Button Content="Добавить клиента" Style="{StaticResource QuickActionButton}" Click="AddClientButton_Click"/>
                         <Button Content="Новая аренда" Style="{StaticResource QuickActionButton}"/>
                         <Button Content="Отчеты" Style="{StaticResource QuickActionButton}"/>
                         <Button Content="Каталог" Style="{StaticResource QuickActionButton}" Click="CatalogButton_Click"/>

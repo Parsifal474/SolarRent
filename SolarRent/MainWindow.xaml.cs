@@ -27,5 +27,11 @@ namespace SolarRent
                 _catalogWindow.Focus();
             }
         }
+
+        private void AddClientButton_Click(object sender, RoutedEventArgs e)
+        {
+            var addClientWindow = new AddClient();
+            addClientWindow.ShowDialog();
+        }
     }
 }
