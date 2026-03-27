@@ -1,11 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
-using SolarRent.Core.Models;
-using SolarRent.Data.Repositories;
+﻿// ============================================================
+// Реализация: Сервис для работы с оборудованием
+// Разработчик: Яковчук В.П. (Team Lead)
+// ============================================================
+
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SolarRent.Models;
+using SolarRent.Data.Repositories;
 
-namespace SolarRent.Core.Services
+namespace SolarRent.Services
 {
     public class EquipmentService : IEquipmentService
     {

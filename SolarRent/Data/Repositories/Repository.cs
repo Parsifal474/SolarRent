@@ -1,8 +1,12 @@
-﻿using System.Collections.Generic;
+﻿// ============================================================
+// Реализация: Базовый репозиторий
+// Разработчик: Ковалевский И.М. (Backend разработчик)
+// ============================================================
+
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using SolarRent.SolarRent.Data;
-using SolarRent.SolarRent.Data.Repositories;
+using SolarRent.Data;
 
 namespace SolarRent.Data.Repositories
 {

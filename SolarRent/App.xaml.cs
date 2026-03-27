@@ -1,14 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Windows;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using SolarRent.Core.Services;
 using SolarRent.Data;
 using SolarRent.Data.Repositories;
-using SolarRent.SolarRent.Data;
-using SolarRent.WPF.ViewModels;
-using System.Windows;
+using SolarRent.Services;
+using SolarRent.ViewModels;
 
-namespace SolarRent.WPF
+namespace SolarRent
 {
     public partial class App : Application
     {
@@ -19,20 +18,12 @@ namespace SolarRent.WPF
             _host = Host.CreateDefaultBuilder()
                 .ConfigureServices((context, services) =>
                 {
-                    // База данных
                     services.AddDbContext<AppDbContext>(options =>
                         options.UseNpgsql("Host=localhost;Database=SolarRent;Username=postgres;Password=password"));
 
-                    // Репозитории
                     services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-
-                    // Сервисы
                     services.AddScoped<IEquipmentService, EquipmentService>();
-
-                    // ViewModels
                     services.AddSingleton<MainViewModel>();
-
-                    // Окна
                     services.AddTransient<MainWindow>();
                 })
                 .Build();
@@ -42,7 +33,6 @@ namespace SolarRent.WPF
         {
             await _host.StartAsync();
 
-            // Применяем миграции при старте (опционально)
             using var scope = _host.Services.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             await db.Database.MigrateAsync();

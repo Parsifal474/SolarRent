@@ -1,7 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
-using SolarRent.Core.Models;
-using SolarRent.Model;
-using System.Reflection.Emit;
+﻿// ============================================================
+// Контекст базы данных (Entity Framework Core)
+// Разработчик: Ковалевский И.М. (Backend разработчик)
+// ============================================================
+
+using Microsoft.EntityFrameworkCore;
+using SolarRent.Models;
 
 namespace SolarRent.Data
 {
@@ -19,7 +22,6 @@ namespace SolarRent.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Индексы для часто используемых полей
             modelBuilder.Entity<RentalOrder>()
                 .HasIndex(r => r.Status);
             modelBuilder.Entity<RentalOrder>()

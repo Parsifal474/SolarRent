@@ -1,9 +1,13 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using SolarRent.Core.Models;
-using SolarRent.SolarRent.Core.Models;
+﻿// ============================================================
+// Интерфейс: Сервис для работы с оборудованием
+// Разработчик: Яковчук В.П. (Team Lead)
+// ============================================================
 
-namespace SolarRent.Core.Services
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using SolarRent.Models;
+
+namespace SolarRent.Services
 {
     public interface IEquipmentService
     {
