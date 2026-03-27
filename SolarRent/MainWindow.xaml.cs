@@ -33,5 +33,11 @@ namespace SolarRent
             var addClientWindow = new AddClient();
             addClientWindow.ShowDialog();
         }
+
+        private void CalendarButton_Click(object sender, RoutedEventArgs e)
+        {
+            var calendarWindow = new RentalCalendar();
+            calendarWindow.Show();
+        }
     }
 }

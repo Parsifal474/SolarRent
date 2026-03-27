@@ -360,7 +360,7 @@
                                Margin="0,0,0,15"/>
 
                     <StackPanel Grid.Row="1">
-                        <Button Content="Календарь аренды" Style="{StaticResource QuickActionButton}"/>
+                        <Button Content="Календарь аренды" Style="{StaticResource QuickActionButton}" Click="CalendarButton_Click"/>
                         <Button Content="Добавить клиента" Style="{StaticResource QuickActionButton}" Click="AddClientButton_Click"/>
                         <Button Content="Новая аренда" Style="{StaticResource QuickActionButton}"/>
                         <Button Content="Отчеты" Style="{StaticResource QuickActionButton}"/>
