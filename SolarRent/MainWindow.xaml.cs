@@ -1,40 +1,31 @@
 ﻿using System.Windows;
-using System.Windows.Controls;
 
 namespace SolarRent
 {
-    public partial class MainWindow // или LoginWindow
+    public partial class MainDashboardWindow : Window
     {
-        public MainWindow() // или LoginWindow()
+        private Catalog _catalogWindow;
+
+        public MainDashboardWindow()
         {
             InitializeComponent();
-            cmbRole.SelectedIndex = 0; // Выбираем первую роль по умолчанию
         }
 
-        private void LoginButton_Click(object sender, RoutedEventArgs e)
+        private void CatalogButton_Click(object sender, RoutedEventArgs e)
         {
-            string login = txtLogin.Text;
-            string password = pwdPassword.Password;
-            string role = (cmbRole.SelectedItem as ComboBoxItem)?.Content.ToString();
-
-            // Простая валидация
-            if (string.IsNullOrWhiteSpace(login))
+            // Если окно каталога еще не создано или закрыто
+            if (_catalogWindow == null || !_catalogWindow.IsVisible)
             {
-                MessageBox.Show("Введите логин", "Ошибка",
-                    MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
+                _catalogWindow = new Catalog();
+                _catalogWindow.Show();
             }
-
-            if (string.IsNullOrWhiteSpace(password))
+            else
             {
-                MessageBox.Show("Введите пароль", "Ошибка",
-                    MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
+                // Если окно уже открыто - активируем его
+                _catalogWindow.Activate();
+                _catalogWindow.WindowState = WindowState.Normal;
+                _catalogWindow.Focus();
             }
-
-            // Здесь будет ваша логика авторизации
-            MessageBox.Show($"Вход выполнен!\nЛогин: {login}\nРоль: {role}",
-                "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
         }
     }
 }
