@@ -185,7 +185,7 @@
 
                 <Button Grid.Column="1" 
                         Content="+ Добавить оборудование" 
-                        Style="{StaticResource PrimaryButtonStyle}"/>
+                        Style="{StaticResource PrimaryButtonStyle}" Click="AddEquipmentButton_Click"/>
             </Grid>
         </Border>
 
