@@ -35,7 +35,7 @@ namespace SolarRent
 
             using var scope = _host.Services.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-            await db.Database.MigrateAsync();
+            //await db.Database.MigrateAsync();
 
             var mainWindow = _host.Services.GetRequiredService<MainWindow>();
             mainWindow.Show();

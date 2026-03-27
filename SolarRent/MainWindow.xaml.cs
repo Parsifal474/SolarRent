@@ -1,24 +1,40 @@
 ﻿using System.Windows;
-using SolarRent.ViewModels;
+using System.Windows.Controls;
 
 namespace SolarRent
 {
-    public partial class MainWindow : Window
+    public partial class MainWindow // или LoginWindow
     {
-        /// <summary>
-        /// Конструктор без параметров (нужен для XAML-парсера)
-        /// </summary>
-        public MainWindow()
+        public MainWindow() // или LoginWindow()
         {
             InitializeComponent();
+            cmbRole.SelectedIndex = 0; // Выбираем первую роль по умолчанию
         }
 
-        /// <summary>
-        /// Конструктор для DI (получает ViewModel)
-        /// </summary>
-        public MainWindow(MainViewModel viewModel) : this()
+        private void LoginButton_Click(object sender, RoutedEventArgs e)
         {
-            DataContext = viewModel;
+            string login = txtLogin.Text;
+            string password = pwdPassword.Password;
+            string role = (cmbRole.SelectedItem as ComboBoxItem)?.Content.ToString();
+
+            // Простая валидация
+            if (string.IsNullOrWhiteSpace(login))
+            {
+                MessageBox.Show("Введите логин", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                MessageBox.Show("Введите пароль", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            // Здесь будет ваша логика авторизации
+            MessageBox.Show($"Вход выполнен!\nЛогин: {login}\nРоль: {role}",
+                "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
         }
     }
 }
