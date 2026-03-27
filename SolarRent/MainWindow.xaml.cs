@@ -46,5 +46,17 @@ namespace SolarRent
             var reportsWindow = new Reports();
             reportsWindow.Show();
         }
+
+        private void NewRentalButton_Click(object sender, RoutedEventArgs e)
+        {
+            var newRentalWindow = new NewRental();
+            var result = newRentalWindow.ShowDialog();
+
+            if (result == true)
+            {
+                MessageBox.Show("Аренда создана!", "Успех",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
     }
 }

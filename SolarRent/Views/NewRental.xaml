@@ -1,0 +1,257 @@
+﻿<Window x:Class="SolarRent.NewRental"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="SolarRent - Новая аренда" 
+        Height="650" 
+        Width="600"
+        WindowStartupLocation="CenterScreen"
+        Background="#F5F5F5"
+        ResizeMode="NoResize">
+
+    <Window.Resources>
+        <!-- Стиль для заголовков -->
+        <Style x:Key="LabelStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#555555"/>
+            <Setter Property="Margin" Value="0,0,0,5"/>
+        </Style>
+
+        <!-- Стиль для полей ввода -->
+        <Style x:Key="InputStyle" TargetType="TextBox">
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="Margin" Value="0,0,0,15"/>
+            <Setter Property="Padding" Value="10,0"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#D1D5DB"/>
+            <Setter Property="Background" Value="White"/>
+        </Style>
+
+        <!-- Стиль для ComboBox -->
+        <Style x:Key="ComboBoxStyle" TargetType="ComboBox">
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="Margin" Value="0,0,0,15"/>
+            <Setter Property="Padding" Value="10,0"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#D1D5DB"/>
+            <Setter Property="Background" Value="White"/>
+        </Style>
+
+        <!-- Стиль для DatePicker -->
+        <Style x:Key="DatePickerStyle" TargetType="DatePicker">
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="Margin" Value="0,0,0,15"/>
+            <Setter Property="Padding" Value="10,0"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#D1D5DB"/>
+        </Style>
+
+        <!-- Стиль для кнопок -->
+        <Style x:Key="PrimaryButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#2E2EFF"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="20,12"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="6"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#1a1aff"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="CancelButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#E5E7EB"/>
+            <Setter Property="Foreground" Value="#374151"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Padding" Value="20,12"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="6"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#D1D5DB"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Стиль для информационного блока -->
+        <Style x:Key="InfoBoxStyle" TargetType="Border">
+            <Setter Property="Background" Value="#F3F4F6"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="Padding" Value="15"/>
+            <Setter Property="Margin" Value="0,0,0,15"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Заголовок -->
+        <Border Grid.Row="0" Background="#2E2EFF" Padding="20,15">
+            <TextBlock Text="Новая аренда" 
+                       FontSize="24" 
+                       FontWeight="Bold" 
+                       Foreground="White"/>
+        </Border>
+
+        <!-- Форма -->
+        <Border Grid.Row="1" Background="White" Padding="30" Margin="10">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel>
+                    <!-- Клиент -->
+                    <TextBlock Text="Клиент *" Style="{StaticResource LabelStyle}"/>
+                    <ComboBox x:Name="cmbClient" Style="{StaticResource ComboBoxStyle}">
+                        <ComboBoxItem Content='ООО "Энергия"'/>
+                        <ComboBoxItem Content='ООО "СтройТех"'/>
+                        <ComboBoxItem Content='ИП Иванов А.А.'/>
+                        <ComboBoxItem Content='Физ. лицо Петров В.В.'/>
+                    </ComboBox>
+
+                    <!-- Оборудование -->
+                    <TextBlock Text="Оборудование *" Style="{StaticResource LabelStyle}"/>
+                    <ComboBox x:Name="cmbEquipment" 
+          Style="{StaticResource ComboBoxStyle}"
+          SelectionChanged="cmbEquipment_SelectionChanged">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Vertical">
+                                    <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="14"/>
+                                    <TextBlock>
+                    <Run Text="{Binding TypeDisplay}"/>
+                    <Run Text=" | "/>
+                    <Run Text="{Binding PowerDisplay}"/>
+                    <Run Text=" | "/>
+                    <Run Text="₽"/>
+                    <Run Text="{Binding RentalPricePerDay, StringFormat={}{0:N0}}"/>
+                    <Run Text="/день"/>
+                                    </TextBlock>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+
+                    <!-- Количество дней -->
+                    <TextBlock Text="Количество дней *" Style="{StaticResource LabelStyle}"/>
+                    <TextBox x:Name="txtDays" Style="{StaticResource InputStyle}" TextChanged="txtDays_TextChanged"/>
+
+                    <!-- Дата начала -->
+                    <TextBlock Text="Дата начала *" Style="{StaticResource LabelStyle}"/>
+                    <DatePicker x:Name="dpStartDate" 
+                            Style="{StaticResource DatePickerStyle}"
+                            SelectedDateChanged="dpStartDate_SelectedDateChanged"/>
+
+                    <!-- Дата окончания (автоматически) -->
+                    <TextBlock Text="Дата окончания" Style="{StaticResource LabelStyle}"/>
+                    <TextBox x:Name="txtEndDate" Style="{StaticResource InputStyle}" IsReadOnly="True"/>
+
+                    <!-- Информационный блок -->
+                    <Border Style="{StaticResource InfoBoxStyle}">
+                        <StackPanel>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="Цена за день:" FontWeight="SemiBold" Foreground="#555555"/>
+                                <TextBlock Grid.Column="1" x:Name="lblPricePerDay" Text="₽ 1,500" FontWeight="Bold" Foreground="#333333"/>
+                            </Grid>
+                            <Grid Margin="0,8,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="Залог:" FontWeight="SemiBold" Foreground="#555555"/>
+                                <TextBlock Grid.Column="1" x:Name="lblDeposit" Text="₽ 3,000" FontWeight="Bold" Foreground="#333333"/>
+                            </Grid>
+                            <Separator Margin="0,8,0,8" Background="#D1D5DB"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="Итого:" FontWeight="Bold" Foreground="#333333" FontSize="16"/>
+                                <TextBlock Grid.Column="1" x:Name="lblTotal" Text="₽ 0" FontWeight="Bold" Foreground="#2E2EFF" FontSize="16"/>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Скидка -->
+                    <TextBlock Text="Скидка (%)" Style="{StaticResource LabelStyle}"/>
+                    <TextBox x:Name="txtDiscount" 
+                    Style="{StaticResource InputStyle}"
+                    TextChanged="txtDiscount_TextChanged"/>
+
+                    <!-- Примечание -->
+                    <TextBlock Text="Примечание" Style="{StaticResource LabelStyle}"/>
+                    <TextBox x:Name="txtNote" 
+                             Height="80" 
+                             Margin="0,0,0,15"
+                             Padding="10"
+                             FontSize="14"
+                             BorderThickness="1"
+                             BorderBrush="#D1D5DB"
+                             Background="White"
+                             TextWrapping="Wrap"
+                             AcceptsReturn="True"
+                             VerticalContentAlignment="Top"/>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+
+        <!-- Кнопки -->
+        <Border Grid.Row="2" Padding="30,20" Background="White">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="1" 
+                        Content="Отмена" 
+                        Style="{StaticResource CancelButtonStyle}"
+                        Width="120"
+                        Margin="0,0,10,0"
+                        Click="CancelButton_Click"/>
+
+                <Button Grid.Column="2" 
+                        Content="Создать аренду" 
+                        Style="{StaticResource PrimaryButtonStyle}"
+                        Width="150"
+                        Click="CreateRentalButton_Click"/>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>
