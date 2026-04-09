@@ -167,8 +167,9 @@
                            Style="{StaticResource HeaderTitleStyle}"/>
 
                 <Button Grid.Column="1" 
-                        Content="Новое оборудование" 
-                        Style="{StaticResource PrimaryButtonStyle}"/>
+        Content="Новое оборудование" 
+        Style="{StaticResource PrimaryButtonStyle}" 
+        Click="AddEquipmentButton_Click"/>
             </Grid>
         </Border>
 

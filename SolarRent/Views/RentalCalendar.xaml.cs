@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System.Windows;
 
 namespace SolarRent
 {
@@ -7,6 +8,11 @@ namespace SolarRent
         public RentalCalendar()
         {
             InitializeComponent();
+        }
+        private void AddEquipmentButton_Click(object sender, RoutedEventArgs e)
+        {
+            var addWindow = App.Services.GetRequiredService<AddEquipmentWindow>();
+            addWindow.ShowDialog();
         }
     }
 }
