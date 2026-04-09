@@ -201,15 +201,26 @@
                             <Border Grid.Row="3" Background="{StaticResource SuccessGreen}" CornerRadius="6" Padding="8,4" Margin="0,0,0,10">
                                 <TextBlock Text="{Binding StatusDisplay}" Foreground="#166534" FontSize="13" FontWeight="SemiBold" HorizontalAlignment="Center"/>
                             </Border>
-
-                            <!-- Кнопки -->
+                            <!-- Кнопки в карточке -->
                             <Grid Grid.Row="4">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
-                                <Button Grid.Column="0" Content="✎ Изменить" Style="{StaticResource ActionButtonStyle}" HorizontalAlignment="Left"/>
-                                <Button Grid.Column="1" Content="🗑 Удалить" Style="{StaticResource ActionButtonStyle}" HorizontalAlignment="Right" Foreground="#EF4444"/>
+
+                                <Button Grid.Column="0" 
+            Content="✎ Изменить" 
+            Style="{StaticResource ActionButtonStyle}" 
+            HorizontalAlignment="Left"/>
+
+                                <!-- 🔥 Кнопка Удалить с привязкой к команде карточки -->
+                                <Button Grid.Column="1" 
+            Content="🗑 Удалить" 
+            Style="{StaticResource ActionButtonStyle}" 
+            HorizontalAlignment="Right" 
+            Foreground="#EF4444"
+            Command="{Binding DeleteCommand}"/>
+                                <!-- 🔥 Важно: команда из EquipmentItem -->
                             </Grid>
                         </Grid>
                     </Border>

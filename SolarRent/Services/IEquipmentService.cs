@@ -15,5 +15,7 @@ namespace SolarRent.Services
         Task AddEquipmentAsync(Equipment equipment);
         Task UpdateStatusAsync(int equipmentId, string newStatus);
         Task<IEnumerable<Equipment>> FilterAsync(EquipmentType? type, double? maxPower, decimal? maxPrice);
+        Task DeleteAsync(int id);
     }
+
 }

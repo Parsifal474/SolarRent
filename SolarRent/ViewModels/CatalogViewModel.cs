@@ -1,4 +1,5 @@
-﻿using SolarRent.Models;
+﻿using CommunityToolkit.Mvvm.Input;
+using SolarRent.Models;
 using SolarRent.Services;
 using System;
 using System.Collections.ObjectModel;
@@ -6,6 +7,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 namespace SolarRent.ViewModels
@@ -15,7 +17,7 @@ namespace SolarRent.ViewModels
         private readonly IEquipmentService _equipmentService;
 
         // 🔥 Пагинация
-        private const int PageSize = 8;  // ← 8 карточек на странице!
+        private const int PageSize = 8;
         private int _currentPage = 1;
         private int _totalCount = 0;
 
@@ -43,7 +45,7 @@ namespace SolarRent.ViewModels
             set { _isLoading = value; OnPropertyChanged(); }
         }
 
-        // 🔥 Пагинация: свойства для UI
+        // 🔥 Пагинация
         public int CurrentPage
         {
             get => _currentPage;
@@ -51,10 +53,8 @@ namespace SolarRent.ViewModels
         }
 
         public int TotalPages => (_totalCount + PageSize - 1) / PageSize;
-
         public bool CanGoPrev => CurrentPage > 1;
         public bool CanGoNext => CurrentPage < TotalPages;
-
         public string PageInfo => $"Страница {CurrentPage} из {TotalPages} (всего: {_totalCount})";
 
         // 🔥 Команды
@@ -62,6 +62,7 @@ namespace SolarRent.ViewModels
         public ICommand SearchCommand { get; }
         public ICommand PrevPageCommand { get; }
         public ICommand NextPageCommand { get; }
+        public ICommand DeleteCommand { get; }  // 🔥 Новая команда удаления
 
         public CatalogViewModel(IEquipmentService equipmentService)
         {
@@ -70,8 +71,40 @@ namespace SolarRent.ViewModels
             SearchCommand = new RelayCommand(async () => await SearchAsync());
             PrevPageCommand = new RelayCommand(PrevPage, () => CanGoPrev);
             NextPageCommand = new RelayCommand(NextPage, () => CanGoNext);
+            DeleteCommand = new RelayCommand<EquipmentItem>(async (item) => await DeleteEquipmentAsync(item));  // 🔥 Инициализация
 
             _ = LoadEquipmentAsync();
+        }
+
+        // 🔥 Метод удаления оборудования
+        private async Task DeleteEquipmentAsync(EquipmentItem item)
+        {
+            if (item == null) return;
+
+            // Подтверждение
+            var result = MessageBox.Show(
+                $"Вы уверены, что хотите удалить '{item.Name}'?",
+                "Подтверждение удаления",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning);
+
+            if (result != MessageBoxResult.Yes) return;
+
+            try
+            {
+                IsLoading = true;
+                await _equipmentService.DeleteAsync(item.Id);  // Вызов сервиса
+                await LoadEquipmentAsync();  // Обновление списка
+                MessageBox.Show("✅ Оборудование удалено", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"❌ Ошибка: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                IsLoading = false;
+            }
         }
 
         private async Task LoadEquipmentAsync()
@@ -79,12 +112,9 @@ namespace SolarRent.ViewModels
             IsLoading = true;
             try
             {
-                // 🔥 Загружаем ВСЕ доступные (для простоты), потом пагинируем в памяти
-                // Для продакшена лучше делать пагинацию на уровне БД
                 var allEquipment = await _equipmentService.GetAvailableAsync();
                 _totalCount = allEquipment.Count();
 
-                // 🔥 Пагинация: Skip + Take
                 var page = allEquipment
                     .Skip((CurrentPage - 1) * PageSize)
                     .Take(PageSize);
@@ -92,10 +122,10 @@ namespace SolarRent.ViewModels
                 EquipmentList.Clear();
                 foreach (var eq in page)
                 {
-                    EquipmentList.Add(new EquipmentItem(eq));
+                    // 🔥 Передаём ссылку на ViewModel для команд
+                    EquipmentList.Add(new EquipmentItem(eq, this));
                 }
 
-                // 🔥 Обновляем свойства пагинации
                 OnPropertyChanged(nameof(TotalPages));
                 OnPropertyChanged(nameof(CanGoPrev));
                 OnPropertyChanged(nameof(CanGoNext));
@@ -109,22 +139,20 @@ namespace SolarRent.ViewModels
 
         private async Task SearchAsync()
         {
-            CurrentPage = 1; // Сброс на первую страницу при поиске
+            CurrentPage = 1;
             IsLoading = true;
             try
             {
                 var allEquipment = await _equipmentService.GetAvailableAsync();
 
-                // Фильтрация
                 if (!string.IsNullOrWhiteSpace(SearchQuery))
                 {
                     allEquipment = allEquipment.Where(e =>
-                        e.Name.Contains(SearchQuery, System.StringComparison.OrdinalIgnoreCase));
+                        e.Name.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase));
                 }
 
                 _totalCount = allEquipment.Count();
 
-                // Пагинация
                 var page = allEquipment
                     .Skip((CurrentPage - 1) * PageSize)
                     .Take(PageSize);
@@ -132,7 +160,7 @@ namespace SolarRent.ViewModels
                 EquipmentList.Clear();
                 foreach (var eq in page)
                 {
-                    EquipmentList.Add(new EquipmentItem(eq));
+                    EquipmentList.Add(new EquipmentItem(eq, this));  // 🔥 Передаём ViewModel
                 }
 
                 OnPropertyChanged(nameof(TotalPages));
@@ -171,9 +199,11 @@ namespace SolarRent.ViewModels
         }
     }
 
-    // ViewModel-модель для UI
-    public class EquipmentItem
+    // 🔥 ViewModel-модель для UI с поддержкой команд
+    public class EquipmentItem : INotifyPropertyChanged
     {
+        private readonly CatalogViewModel _parentViewModel;  // 🔥 Ссылка на родительскую ViewModel
+
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public EquipmentType Type { get; set; }
@@ -182,7 +212,8 @@ namespace SolarRent.ViewModels
         public string Status { get; set; } = string.Empty;
         public string? Description { get; set; }
 
-        public EquipmentItem(Equipment equipment)
+        // 🔥 Конструктор с передачей родителя
+        public EquipmentItem(Equipment equipment, CatalogViewModel parentViewModel)
         {
             Id = equipment.Id;
             Name = equipment.Name;
@@ -191,10 +222,18 @@ namespace SolarRent.ViewModels
             Price = equipment.Price;
             Status = equipment.Status;
             Description = equipment.Description;
+            _parentViewModel = parentViewModel;
         }
 
         public EquipmentItem() { }
 
+        // 🔥 Команда удаления (выполняет команду родителя)
+        public ICommand DeleteCommand => new RelayCommand(() =>
+        {
+            _parentViewModel?.DeleteCommand?.Execute(this);
+        });
+
+        // Вычисляемые свойства
         public string TypeDisplay => Type switch
         {
             EquipmentType.Panel => "🔆 Панель",
@@ -215,27 +254,49 @@ namespace SolarRent.ViewModels
         public decimal Deposit => Price * 0.5m;
         public string StatusDisplay => Status == "InStock" ? "В наличии" : Status;
         public string DisplayName => $"{Name} ({PowerDisplay})";
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 
-    // Простая реализация ICommand
+    // 🔥 RelayCommand с поддержкой параметра
     public class RelayCommand : ICommand
     {
         private readonly Action _execute;
+        private readonly Action<object?> _executeWithParam;
         private readonly Func<bool>? _canExecute;
 
+        // Конструктор без параметра
         public RelayCommand(Action execute, Func<bool>? canExecute = null)
         {
-            _execute = execute;
+            _execute = execute ?? throw new ArgumentNullException(nameof(execute));
+            _canExecute = canExecute;
+        }
+
+        // 🔥 Конструктор с параметром
+        public RelayCommand(Action<object?> executeWithParam, Func<bool>? canExecute = null)
+        {
+            _executeWithParam = executeWithParam ?? throw new ArgumentNullException(nameof(executeWithParam));
             _canExecute = canExecute;
         }
 
         public event EventHandler? CanExecuteChanged
         {
-            add => System.Windows.Input.CommandManager.RequerySuggested += value;
-            remove => System.Windows.Input.CommandManager.RequerySuggested -= value;
+            add => CommandManager.RequerySuggested += value;
+            remove => CommandManager.RequerySuggested -= value;
         }
 
         public bool CanExecute(object? parameter) => _canExecute?.Invoke() ?? true;
-        public void Execute(object? parameter) => _execute();
+
+        public void Execute(object? parameter)
+        {
+            if (_executeWithParam != null)
+                _executeWithParam(parameter);
+            else
+                _execute();
+        }
     }
 }

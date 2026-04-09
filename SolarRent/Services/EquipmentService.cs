@@ -1,11 +1,8 @@
-﻿// ============================================================
-// Реализация: Сервис для работы с оборудованием
-// Разработчик: Яковчук В.П. (Team Lead)
-// ============================================================
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using SolarRent.Data; // Добавь этот namespace
 using SolarRent.Models;
 using SolarRent.Data.Repositories;
 
@@ -14,10 +11,13 @@ namespace SolarRent.Services
     public class EquipmentService : IEquipmentService
     {
         private readonly IRepository<Equipment> _equipmentRepo;
+        private readonly AppDbContext _context; // 🔥 Добавили контекст
 
-        public EquipmentService(IRepository<Equipment> equipmentRepo)
+        // 🔥 Обнови конструктор
+        public EquipmentService(IRepository<Equipment> equipmentRepo, AppDbContext context)
         {
             _equipmentRepo = equipmentRepo;
+            _context = context;
         }
 
         public async Task<IEnumerable<Equipment>> GetAvailableAsync()
@@ -53,6 +53,17 @@ namespace SolarRent.Services
             if (maxPrice.HasValue)
                 all = all.Where(e => e.Price <= maxPrice.Value);
             return all;
+        }
+
+        // 🔥 Исправленный метод удаления через DbContext
+        public async Task DeleteAsync(int id)
+        {
+            var equipment = await _context.Equipments.FindAsync(id);
+            if (equipment != null)
+            {
+                _context.Equipments.Remove(equipment);
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }
