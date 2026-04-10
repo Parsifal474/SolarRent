@@ -82,6 +82,12 @@ namespace SolarRent
                     services.AddTransient<Sale>();
                     // После других ViewModel
                     services.AddTransient<LeaseAcceptanceViewModel>();
+
+
+                    // В ConfigureServices добавить:
+                    services.AddScoped<ISaleService, SaleService>();
+                    services.AddTransient<SalesHistoryViewModel>();
+                    services.AddTransient<SalesHistoryWindow>();
                 })
                 .Build();
         }

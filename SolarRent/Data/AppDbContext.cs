@@ -17,6 +17,9 @@ namespace SolarRent.Data
         public DbSet<Equipment> Equipments => Set<Equipment>();
         public DbSet<RentalOrder> RentalOrders => Set<RentalOrder>();
         public DbSet<DefectRecord> DefectRecords => Set<DefectRecord>();
+        // Data/AppDbContext.cs (добавить DbSet)
+        public DbSet<SaleRecord> SaleRecords { get; set; }
+        public DbSet<SaleItemRecord> SaleItemRecords { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

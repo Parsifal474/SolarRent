@@ -104,9 +104,10 @@
 
                 <StackPanel Grid.Column="1" Orientation="Horizontal">
                     <Button Content="📄 История продаж" 
-                            Background="White" Foreground="#2E2EFF"
-                            Padding="15,8" Margin="0,0,10,0"
-                            BorderThickness="0" Cursor="Hand" FontWeight="SemiBold"/>
+        Background="White" Foreground="#2E2EFF"
+        Padding="15,8" Margin="0,0,10,0"
+        BorderThickness="0" Cursor="Hand" FontWeight="SemiBold"
+        Click="HistoryButton_Click"/>
                     <Button Content="⚙️ Настройки" 
                             Background="White" Foreground="#2E2EFF"
                             Padding="15,8"
@@ -155,10 +156,7 @@
                                       SelectedValue="{Binding SelectedType}"
                                       SelectedValuePath="Tag">
                                 <ComboBoxItem Content="Все типы" Tag="{x:Null}"/>
-                                <ComboBoxItem Content="Панели" Tag="{x:Static local:EquipmentType.Panel}"/>
-                                <ComboBoxItem Content="Инверторы" Tag="{x:Static local:EquipmentType.Inverter}"/>
-                                <ComboBoxItem Content="Аккумуляторы" Tag="{x:Static local:EquipmentType.Battery}"/>
-                                <ComboBoxItem Content="Комплектующие" Tag="{x:Static local:EquipmentType.Accessory}"/>
+                              
                             </ComboBox>
 
                             <Button Grid.Column="2" Content="🔍 Найти" 

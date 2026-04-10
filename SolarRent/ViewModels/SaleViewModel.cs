@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 namespace SolarRent.ViewModels
@@ -74,6 +75,10 @@ namespace SolarRent.ViewModels
         public ICommand PrevPageCommand { get; }
         public ICommand NextPageCommand { get; }
         public ICommand CheckoutCommand { get; }
+
+
+        private readonly ISaleService _saleService;
+        private readonly IClientService _clientService;
 
         public SaleViewModel(IEquipmentService equipmentService)
         {
@@ -146,6 +151,64 @@ namespace SolarRent.ViewModels
             OnPropertyChanged(nameof(PageInfo));
         }
 
+
+        //private async void Checkout()
+        //{
+        //    if (Cart.Count == 0)
+        //    {
+        //        MessageBox.Show("Корзина пуста!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+        //        return;
+        //    }
+
+        //    // Выбор клиента (можно добавить диалог выбора)
+        //    var clients = await _clientService.GetAllClientsAsync();
+        //    var client = clients.FirstOrDefault();
+        //    if (client == null)
+        //    {
+        //        MessageBox.Show("Нет клиентов в базе. Сначала добавьте клиента.", "Ошибка",
+        //            MessageBoxButton.OK, MessageBoxImage.Warning);
+        //        return;
+        //    }
+
+        //    var result = MessageBox.Show(
+        //        $"Оформить продажу на сумму {CartTotal:N0} ₽?\nКлиент: {client.FullName}",
+        //        "Подтверждение",
+        //        MessageBoxButton.YesNo,
+        //        MessageBoxImage.Question);
+
+        //    if (result == MessageBoxResult.Yes)
+        //    {
+        //        try
+        //        {
+        //            var sale = new SaleRecord
+        //            {
+        //                ClientId = client.Id,
+        //                TotalAmount = CartTotal,
+        //                PaymentMethod = "Наличные"
+        //            };
+
+        //            var items = Cart.Select(item => new SaleItemRecord
+        //            {
+        //                EquipmentId = item.Id,
+        //                Quantity = item.Quantity,
+        //                UnitPrice = item.Price
+        //            }).ToList();
+
+        //            await _saleService.CreateSaleAsync(sale, items);
+
+        //            MessageBox.Show($"✅ Продажа оформлена!\nНомер: #{sale.Id}\nСумма: {CartTotal:N0} ₽",
+        //                "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+
+        //            Cart.Clear();
+        //            OnPropertyChanged(nameof(CartTotal));
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            MessageBox.Show($"❌ Ошибка: {ex.Message}", "Ошибка",
+        //                MessageBoxButton.OK, MessageBoxImage.Error);
+        //        }
+        //    }
+        //}
         // 🔥 Добавить в корзину
         private void AddToCart(SaleItem item)
         {
