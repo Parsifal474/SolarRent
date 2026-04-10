@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SolarRent.Services;
+using SolarRent.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -23,10 +24,17 @@ namespace SolarRent.ViewModels
         [ObservableProperty]
         private bool _isLoading;
 
+        // 🔥 Команда для клика по дню
+        public IRelayCommand<CalendarDay> DayClickCommand { get; }
+
         public RentalCalendarViewModel(ICalendarService calendarService)
         {
             _calendarService = calendarService;
             CurrentMonth = DateTime.Today;
+
+            // 🔥 Инициализация команды
+            DayClickCommand = new RelayCommand<CalendarDay>(OnDayClick);
+
             _ = LoadMonthAsync();
         }
 
@@ -60,12 +68,17 @@ namespace SolarRent.ViewModels
             _ = LoadMonthAsync();
         }
 
-        [RelayCommand]
-        private void DayClick(CalendarDay day)
+        // 🔥 Обработчик клика по дню
+        private void OnDayClick(CalendarDay? day)
         {
-            if (day?.Events == null || day.Events.Count == 0) return;
+            if (day?.Events == null || day.Events.Count == 0)
+            {
+                MessageBox.Show("На этот день нет событий", "Информация",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
 
-            var detailsWindow = new Views.DayEventsWindow(day.Date, day.Events);
+            var detailsWindow = new DayEventsWindow(day.Date, day.Events);
             detailsWindow.Owner = Application.Current.MainWindow;
             detailsWindow.ShowDialog();
         }
