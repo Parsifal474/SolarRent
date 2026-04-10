@@ -3,8 +3,10 @@ using SolarRent.Models;
 using SolarRent.Services;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace SolarRent
 {
@@ -12,7 +14,6 @@ namespace SolarRent
     {
         private readonly IEquipmentService _equipmentService;
 
-        // 🔥 Конструктор с внедрением сервиса (для DI)
         public AddEquipmentWindow(IEquipmentService equipmentService)
         {
             InitializeComponent();
@@ -20,14 +21,12 @@ namespace SolarRent
             InitializeForm();
         }
 
-        // 🔥 Конструктор для дизайнера / ручного запуска (опционально)
         public AddEquipmentWindow() : this(App.Services?.GetRequiredService<IEquipmentService>())
         {
         }
 
         private void InitializeForm()
         {
-            // Заполняем ComboBox типами оборудования
             cmbType.Items.Clear();
             foreach (EquipmentType type in Enum.GetValues(typeof(EquipmentType)))
             {
@@ -46,13 +45,9 @@ namespace SolarRent
                 });
             }
             cmbType.SelectedIndex = 0;
-
-            // 🔥 Подписка на изменение цены для авто-расчёта
             txtPrice.TextChanged += TxtPrice_TextChanged;
         }
 
-
-        // 🔥 Авто-расчёт при изменении цены
         private void TxtPrice_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (decimal.TryParse(txtPrice.Text.Replace(" ", "").Replace("₽", ""), out decimal price) && price > 0)
@@ -67,11 +62,17 @@ namespace SolarRent
             }
         }
 
-        private void SaveButton_Click(object sender, RoutedEventArgs e)
+        // 🔥 ИСПРАВЛЕНО: async void + await вместо GetAwaiter().GetResult()
+        private async void SaveButton_Click(object sender, RoutedEventArgs e)
         {
+            // Блокируем интерфейс на время сохранения
+            var saveButton = sender as Button;
+            if (saveButton != null) saveButton.IsEnabled = false;
+            this.Cursor = Cursors.Wait;
+
             try
             {
-                // 🔹 Шаг 1: Валидация
+                // 🔹 Валидация
                 if (string.IsNullOrWhiteSpace(txtName.Text))
                 {
                     MessageBox.Show("Введите название оборудования", "Ошибка",
@@ -111,23 +112,22 @@ namespace SolarRent
                     return;
                 }
 
-                // 🔹 Шаг 2: Создаём объект модели
+                // 🔹 Создаём объект
                 var equipment = new Equipment
                 {
                     Name = txtName.Text.Trim(),
                     Type = equipmentType,
                     Power = power,
-                    Price = price,  // 🔥 Базовая цена, от которой считаются производные
+                    Price = price,
                     Status = "InStock",
                     Description = string.IsNullOrWhiteSpace(txtDescription.Text)
                         ? null
                         : txtDescription.Text.Trim()
                 };
 
-                // 🔹 Шаг 3: Сохранение через сервис (не через DbContext!)
-                _equipmentService.AddEquipmentAsync(equipment).GetAwaiter().GetResult();
+                // 🔥 АСИНХРОННОЕ сохранение (не блокирует UI!)
+                await _equipmentService.AddEquipmentAsync(equipment);
 
-                // 🔹 Шаг 4: Успешный результат
                 MessageBox.Show(
                     $"✅ Оборудование сохранено!\n\n" +
                     $"📦 {equipment.Name}\n" +
@@ -155,6 +155,12 @@ namespace SolarRent
                     MessageBoxImage.Error);
 
                 Console.WriteLine($"❌ ERROR: {ex}");
+            }
+            finally
+            {
+                // 🔥 Всегда разблокируем интерфейс
+                if (saveButton != null) saveButton.IsEnabled = true;
+                this.Cursor = Cursors.Arrow;
             }
         }
 
