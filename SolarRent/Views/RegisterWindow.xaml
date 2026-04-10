@@ -1,0 +1,90 @@
+﻿<Window x:Class="SolarRent.RegisterWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="SolarRent - Создание аккаунта" 
+        Height="700" Width="450"
+        WindowStartupLocation="CenterScreen"
+        Background="#F5F5F5"
+        ResizeMode="NoResize">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Заголовок -->
+        <Border Grid.Row="0" Background="#7C3AED" Padding="0,15">
+            <TextBlock Text="Создание аккаунта" 
+                       FontSize="24" FontWeight="Bold" Foreground="White"
+                       HorizontalAlignment="Center"/>
+        </Border>
+
+        <!-- Форма -->
+        <Border Grid.Row="1" Background="White" Padding="30">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel>
+                    <TextBlock Text="Только для директоров" 
+                               FontSize="14" Foreground="#666" 
+                               Margin="0,0,0,20"
+                               HorizontalAlignment="Center"/>
+
+                    <!-- ФИО -->
+                    <TextBlock Text="ФИО сотрудника *" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                    <TextBox x:Name="txtFullName" Height="40" Padding="10,0" Margin="0,0,0,15" 
+                             BorderBrush="#D1D5DB" BorderThickness="1"/>
+
+                    <!-- Логин -->
+                    <TextBlock Text="Логин *" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                    <TextBox x:Name="txtLogin" Height="40" Padding="10,0" Margin="0,0,0,15"
+                             BorderBrush="#D1D5DB" BorderThickness="1"/>
+
+                    <!-- Пароль -->
+                    <TextBlock Text="Пароль *" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                    <PasswordBox x:Name="pwdPassword" Height="40" Padding="10,0" Margin="0,0,0,15"
+                                 BorderBrush="#D1D5DB" BorderThickness="1"/>
+                    <TextBlock Text="Минимум 4 символа" FontSize="11" Foreground="#999" Margin="0,-10,0,15"/>
+
+                    <!-- Роль -->
+                    <TextBlock Text="Роль *" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                    <ComboBox x:Name="cmbRole" Height="40" Padding="10,0" Margin="0,0,0,20"
+                              BorderBrush="#D1D5DB" BorderThickness="1">
+                        <ComboBoxItem Content="Менеджер по продажам" Tag="Manager"/>
+                        <ComboBoxItem Content="Складской работник" Tag="Warehouse"/>
+                        <ComboBoxItem Content="Директор" Tag="Director"/>
+                        <ComboBoxItem Content="Бухгалтер" Tag="Accountant"/>
+                    </ComboBox>
+
+                    <!-- Подтверждение паролем директора -->
+                    <Border Background="#FEF3C7" CornerRadius="6" Padding="15" Margin="0,0,0,20">
+                        <StackPanel>
+                            <TextBlock Text="🔐 Подтверждение директора" 
+                                       FontSize="14" FontWeight="SemiBold" 
+                                       Foreground="#92400E" Margin="0,0,0,10"/>
+                            <TextBlock Text="Введите ваш пароль для подтверждения" 
+                                       FontSize="12" Foreground="#78350F" Margin="0,0,0,10"/>
+                            <PasswordBox x:Name="pwdDirectorPassword" Height="40" Padding="10,0"
+                                         BorderBrush="#F59E0B" BorderThickness="1"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Кнопки -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Button Grid.Column="0" Content="Отмена" Height="45" Margin="0,0,5,0"
+                                Background="#E5E7EB" Foreground="#374151" FontSize="14" FontWeight="Medium"
+                                BorderThickness="0" Cursor="Hand" Click="CancelButton_Click"/>
+
+                        <Button Grid.Column="1" Content="Создать" Height="45" Margin="5,0,0,0"
+                                Background="#7C3AED" Foreground="White" FontSize="14" FontWeight="SemiBold"
+                                BorderThickness="0" Cursor="Hand" Click="CreateButton_Click"/>
+                    </Grid>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+    </Grid>
+</Window>

@@ -52,6 +52,8 @@ namespace SolarRent
 
                     // === ViewModel (Transient — новый экземпляр для каждого окна) ===
                     services.AddTransient<CatalogViewModel>();
+                    services.AddScoped<IAuthService, AuthService>();
+                    services.AddTransient<RegisterWindow>();
                     // services.AddTransient<MainViewModel>();
                     // services.AddTransient<LoginViewModel>();
 

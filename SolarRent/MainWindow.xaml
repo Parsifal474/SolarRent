@@ -111,7 +111,12 @@
                 <StackPanel Grid.Column="1" Orientation="Horizontal" x:Name="ActionButtonsPanel" VerticalAlignment="Center"/>
             </Grid>
         </Border>
-
+        <Button Content="👤 Создать аккаунт" 
+        Click="CreateAccountButton_Click"
+        Background="#7C3AED"
+        Foreground="White"
+        Padding="15,10"
+        Margin="10"/>
         <!-- ПАНЕЛЬ ВКЛАДОК (навигация) -->
         <TabControl Grid.Row="1" 
                     x:Name="NavigationTabControl"

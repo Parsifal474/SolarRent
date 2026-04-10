@@ -1,24 +1,29 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
-using System.Windows.Controls;
+using SolarRent.Services;
 
 namespace SolarRent
 {
     public partial class LoginWindow : Window
     {
-        public LoginWindow()
+        private readonly IAuthService _authService;
+
+        public LoginWindow(IAuthService authService)
         {
             InitializeComponent();
+            _authService = authService;
             cmbRole.SelectedIndex = 0;
         }
 
-        private void LoginButton_Click(object sender, RoutedEventArgs e)
+        public LoginWindow() : this(App.Services?.GetRequiredService<IAuthService>())
+        {
+        }
+
+        private async void LoginButton_Click(object sender, RoutedEventArgs e)
         {
             string login = txtLogin.Text;
             string password = pwdPassword.Password;
-            string role = (cmbRole.SelectedItem as ComboBoxItem)?.Content.ToString();
 
-            // Валидация
             if (string.IsNullOrWhiteSpace(login))
             {
                 MessageBox.Show("Введите логин", "Ошибка",
@@ -33,7 +38,17 @@ namespace SolarRent
                 return;
             }
 
-            // Открываем главную панель для всех ролей
+            // Аутентификация (теперь без хешей)
+            bool isAuthenticated = await _authService.AuthenticateAsync(login, password);
+
+            if (!isAuthenticated)
+            {
+                MessageBox.Show("Неверный логин или пароль", "Ошибка входа",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            // Открываем главное окно
             var mainWindow = App.Services.GetRequiredService<MainWindow>();
             mainWindow.Show();
             this.Close();

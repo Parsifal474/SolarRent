@@ -44,7 +44,16 @@ namespace SolarRent
                 }
             }
         }
+        private void CreateAccountButton_Click(object sender, RoutedEventArgs e)
+        {
+            var registerWindow = App.Services.GetRequiredService<RegisterWindow>();
 
+            if (registerWindow.ShowDialog() == true)
+            {
+                MessageBox.Show("Аккаунт успешно создан!", "Успех",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
         private void MainFrame_Navigated(object sender, System.Windows.Navigation.NavigationEventArgs e)
         {
             if (e.Content is Page page)
