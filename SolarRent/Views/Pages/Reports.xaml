@@ -55,7 +55,7 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <!-- 🔥 ФИЛЬТР ПО ДАТЕ -->
+            <!-- ФИЛЬТР ПО ДАТЕ -->
             <Border Grid.Row="0" Background="White" CornerRadius="12" Padding="20" Margin="0,0,0,20">
                 <StackPanel>
                     <TextBlock Text="Период отчёта" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,15"/>
@@ -84,7 +84,7 @@
                 </StackPanel>
             </Border>
 
-            <!-- 🔥 КАРТОЧКИ СТАТИСТИКИ -->
+            <!-- КАРТОЧКИ СТАТИСТИКИ -->
             <Grid Grid.Row="1" Margin="0,0,0,20">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -134,7 +134,7 @@
                 </Border>
             </Grid>
 
-            <!-- 🔥 ОСНОВНОЙ КОНТЕНТ (ДВЕ КОЛОНКИ) -->
+            <!-- ОСНОВНОЙ КОНТЕНТ (ДВЕ КОЛОНКИ) -->
             <Grid Grid.Row="2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -287,7 +287,7 @@
                 </Border>
             </Grid>
 
-            <!-- 🔥 ИНДИКАТОР ЗАГРУЗКИ -->
+            <!-- ИНДИКАТОР ЗАГРУЗКИ -->
             <ProgressBar Grid.Row="3" IsIndeterminate="True" Height="4" Margin="0,20,0,0"
                          Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}}"/>
 

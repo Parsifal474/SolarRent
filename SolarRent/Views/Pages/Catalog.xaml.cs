@@ -1,14 +1,15 @@
 ﻿using System.Windows.Controls;
 using SolarRent.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace SolarRent.Views.Pages
 {
     public partial class Catalog : Page
     {
-        public Catalog(CatalogViewModel viewModel)
+        public Catalog()
         {
             InitializeComponent();
-            DataContext = viewModel;
+            DataContext = App.Services.GetRequiredService<CatalogViewModel>();
         }
     }
 }

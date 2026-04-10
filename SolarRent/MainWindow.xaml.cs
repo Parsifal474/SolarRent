@@ -67,10 +67,30 @@ namespace SolarRent
                     {
                         var addWindow = App.Services.GetRequiredService<AddEquipmentWindow>();
                         addWindow.ShowDialog();
-                        // TODO: обновить каталог после закрытия
+                        if (MainFrame.Content is Views.Pages.Catalog catalogPage &&
+                            catalogPage.DataContext is CatalogViewModel vm)
+                        {
+                            vm.LoadCommand.Execute(null);
+                        }
                     });
-                    AddHeaderButton("Фильтры", () => { /* TODO */ });
-                    AddHeaderButton("Экспорт", () => { /* TODO */ });
+
+                    AddHeaderButton("Фильтры", () =>
+                    {
+                        if (MainFrame.Content is Views.Pages.Catalog catalogPage &&
+                            catalogPage.DataContext is CatalogViewModel vm)
+                        {
+                            vm.ToggleFilterPanelCommand.Execute(null);
+                        }
+                    });
+
+                    AddHeaderButton("Экспорт", () =>
+                    {
+                        if (MainFrame.Content is Views.Pages.Catalog catalogPage &&
+                            catalogPage.DataContext is CatalogViewModel vm)
+                        {
+                            vm.ExportToCsvCommand.Execute(null);
+                        }
+                    });
                     break;
 
                 case "Calendar":
@@ -84,14 +104,8 @@ namespace SolarRent
 
                 case "Reports":
                     PageTitleText.Text = "Отчеты и аналитика";
-                    AddHeaderButton("📊 Экспорт", () =>
-                    {
-                        if (MainFrame.Content is Reports reportsPage &&
-                            reportsPage.DataContext is ReportsViewModel vm)
-                        {
-                            vm.ExportToCsvCommand?.Execute(null);  // Вызываем CSV-экспорт
-                        }
-                    });
+                    AddHeaderButton("За месяц", () => { /* TODO */ });
+                    AddHeaderButton("Экспорт", () => { /* TODO */ });
                     break;
 
                 case "Clients":
@@ -102,28 +116,26 @@ namespace SolarRent
                         addWindow.EditingClient = null;
                         addWindow.Closed += (s, e) =>
                         {
-                            if (addWindow.DialogResult == true && MainFrame.Content is Clients clientsPage)
+                            if (addWindow.DialogResult == true && MainFrame.Content is Views.Pages.Clients clientsPage)
                             {
                                 if (clientsPage.DataContext is ClientsViewModel vm)
                                 {
+                                    //  Просто вызываем, без присвоения
                                     vm.LoadDataCommand?.Execute(null);
                                 }
                             }
                         };
                         addWindow.ShowDialog();
                     });
+
                     AddHeaderButton("Экспорт", () =>
                     {
-                        if (MainFrame.Content is Clients clientsPage && clientsPage.DataContext is ClientsViewModel vm)
+                        if (MainFrame.Content is Views.Pages.Catalog catalogPage &&
+                            catalogPage.DataContext is CatalogViewModel vm)
                         {
-                            vm.ExportToCsvCommand?.Execute(null);
+                            vm.ExportToCsvCommand.Execute(null);
                         }
                     });
-                    break;
-
-                case "Settings":
-                    PageTitleText.Text = "Настройки";
-                    // Панель быстрых действий оставляем пустой (или добавьте кнопки по желанию)
                     break;
             }
         }
