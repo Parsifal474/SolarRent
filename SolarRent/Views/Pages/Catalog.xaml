@@ -291,13 +291,8 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
 
-                                <Button Grid.Column="0" 
-                                        Content="✎ Изменить" 
-                                        Style="{StaticResource ActionButtonStyle}" 
-                                        HorizontalAlignment="Left"/>
-
                                 <Button Grid.Column="1" 
-                                        Content="🗑 Удалить" 
+                                        Content="Удалить" 
                                         Style="{StaticResource ActionButtonStyle}" 
                                         HorizontalAlignment="Right" 
                                         Foreground="{StaticResource DangerRed}"
