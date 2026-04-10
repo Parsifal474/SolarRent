@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Windows.Data;
-
+//
 namespace SolarRent.ViewModels
 {
     public class BlacklistButtonConverter : IValueConverter
