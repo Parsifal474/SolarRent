@@ -84,6 +84,9 @@ namespace SolarRent
                     services.AddTransient<Views.ClientOrdersWindow>();
 
                     services.AddTransient<Views.Pages.SettingsPage>();
+
+                    services.AddScoped<IReportService, ReportService>();
+                    services.AddTransient<ReportsViewModel>();
                 })
                 .Build();
         }
