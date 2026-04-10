@@ -47,7 +47,7 @@ namespace SolarRent
 
                     // === Сервисы ===
                     services.AddScoped<IEquipmentService, EquipmentService>();
-                    // services.AddScoped<IClientService, ClientService>();
+                    services.AddScoped<IClientService, ClientService>();
                     // services.AddScoped<IRentalOrderService, RentalOrderService>();
 
                     // === ViewModel (Transient — новый экземпляр для каждого окна) ===

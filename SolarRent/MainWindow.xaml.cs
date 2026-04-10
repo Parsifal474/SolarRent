@@ -1,8 +1,9 @@
-﻿using System.Windows;
-using System.Windows.Controls;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using SolarRent.Services.Navigation;
 using SolarRent.ViewModels;
+using SolarRent.Views.Pages;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace SolarRent
 {
@@ -92,6 +93,17 @@ namespace SolarRent
                     AddHeaderButton("+ Добавить клиента", () =>
                     {
                         var addWindow = App.Services.GetRequiredService<AddClient>();
+                        addWindow.Closed += (s, e) =>
+                        {
+                            if (addWindow.DialogResult == true && MainFrame.Content is Clients clientsPage)
+                            {
+                                if (clientsPage.DataContext is ClientsViewModel vm)
+                                {
+                                    // Вызываем команду обновления данных
+                                    vm.LoadDataCommand?.Execute(null);
+                                }
+                            }
+                        };
                         addWindow.ShowDialog();
                     });
                     AddHeaderButton("Экспорт", () => { });
