@@ -42,7 +42,23 @@ namespace SolarRent.Services
                 await _equipmentRepo.SaveChangesAsync();
             }
         }
+        public async Task UpdateAsync(Equipment equipment)
+        {
+            var existing = await _equipmentRepo.GetByIdAsync(equipment.Id);
+            if (existing != null)
+            {
+                // Обновляем поля
+                existing.Name = equipment.Name;
+                existing.Type = equipment.Type;
+                existing.Power = equipment.Power;
+                existing.Price = equipment.Price;
+                existing.Description = equipment.Description;
+                // Status не меняем через редактирование — только через выдачу/возврат
 
+                _equipmentRepo.Update(existing);
+                await _equipmentRepo.SaveChangesAsync();
+            }
+        }
         public async Task<IEnumerable<Equipment>> FilterAsync(EquipmentType? type, double? maxPower, decimal? maxPrice)
         {
             var all = await _equipmentRepo.GetAllAsync();

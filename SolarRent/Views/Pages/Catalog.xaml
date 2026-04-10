@@ -197,7 +197,9 @@
                                 <Button Grid.Column="0" 
             Content="✎ Изменить" 
             Style="{StaticResource ActionButtonStyle}" 
-            HorizontalAlignment="Left"/>
+            HorizontalAlignment="Left"
+            Foreground="#7C3AED"
+            Command="{Binding EditCommand}"/>
 
                                 <!-- 🔥 Кнопка Удалить с привязкой к команде карточки -->
                                 <Button Grid.Column="1" 

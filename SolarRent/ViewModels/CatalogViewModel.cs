@@ -62,7 +62,8 @@ namespace SolarRent.ViewModels
         public ICommand SearchCommand { get; }
         public ICommand PrevPageCommand { get; }
         public ICommand NextPageCommand { get; }
-        public ICommand DeleteCommand { get; }  // 🔥 Новая команда удаления
+        public ICommand DeleteCommand { get; }
+        public ICommand EditCommand { get; }  // 🔥 Новая команда редактирования
 
         public CatalogViewModel(IEquipmentService equipmentService)
         {
@@ -71,9 +72,25 @@ namespace SolarRent.ViewModels
             SearchCommand = new RelayCommand(async () => await SearchAsync());
             PrevPageCommand = new RelayCommand(PrevPage, () => CanGoPrev);
             NextPageCommand = new RelayCommand(NextPage, () => CanGoNext);
-            DeleteCommand = new RelayCommand<EquipmentItem>(async (item) => await DeleteEquipmentAsync(item));  // 🔥 Инициализация
+            DeleteCommand = new RelayCommand<EquipmentItem>(async (item) => await DeleteEquipmentAsync(item));
+            EditCommand = new RelayCommand<EquipmentItem>(async (item) => await EditEquipmentAsync(item));  // 🔥 Инициализация
 
             _ = LoadEquipmentAsync();
+        }
+
+        // 🔥 Метод редактирования оборудования
+        public async Task EditEquipmentAsync(EquipmentItem item)
+        {
+            if (item == null) return;
+
+            // Открываем окно редактирования
+            var editWindow = new EditEquipmentWindow(_equipmentService, item);
+
+            if (editWindow.ShowDialog() == true)
+            {
+                // Обновляем текущую страницу после успешного редактирования
+                await LoadEquipmentAsync();
+            }
         }
 
         // 🔥 Метод удаления оборудования
@@ -81,7 +98,6 @@ namespace SolarRent.ViewModels
         {
             if (item == null) return;
 
-            // Подтверждение
             var result = MessageBox.Show(
                 $"Вы уверены, что хотите удалить '{item.Name}'?",
                 "Подтверждение удаления",
@@ -93,8 +109,8 @@ namespace SolarRent.ViewModels
             try
             {
                 IsLoading = true;
-                await _equipmentService.DeleteAsync(item.Id);  // Вызов сервиса
-                await LoadEquipmentAsync();  // Обновление списка
+                await _equipmentService.DeleteAsync(item.Id);
+                await LoadEquipmentAsync();
                 MessageBox.Show("✅ Оборудование удалено", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
@@ -122,7 +138,6 @@ namespace SolarRent.ViewModels
                 EquipmentList.Clear();
                 foreach (var eq in page)
                 {
-                    // 🔥 Передаём ссылку на ViewModel для команд
                     EquipmentList.Add(new EquipmentItem(eq, this));
                 }
 
@@ -160,7 +175,7 @@ namespace SolarRent.ViewModels
                 EquipmentList.Clear();
                 foreach (var eq in page)
                 {
-                    EquipmentList.Add(new EquipmentItem(eq, this));  // 🔥 Передаём ViewModel
+                    EquipmentList.Add(new EquipmentItem(eq, this));
                 }
 
                 OnPropertyChanged(nameof(TotalPages));
@@ -202,7 +217,7 @@ namespace SolarRent.ViewModels
     // 🔥 ViewModel-модель для UI с поддержкой команд
     public class EquipmentItem : INotifyPropertyChanged
     {
-        private readonly CatalogViewModel _parentViewModel;  // 🔥 Ссылка на родительскую ViewModel
+        private readonly CatalogViewModel _parentViewModel;
 
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
@@ -212,7 +227,6 @@ namespace SolarRent.ViewModels
         public string Status { get; set; } = string.Empty;
         public string? Description { get; set; }
 
-        // 🔥 Конструктор с передачей родителя
         public EquipmentItem(Equipment equipment, CatalogViewModel parentViewModel)
         {
             Id = equipment.Id;
@@ -227,7 +241,13 @@ namespace SolarRent.ViewModels
 
         public EquipmentItem() { }
 
-        // 🔥 Команда удаления (выполняет команду родителя)
+        // 🔥 Команда редактирования
+        public ICommand EditCommand => new RelayCommand(() =>
+        {
+            _parentViewModel?.EditCommand?.Execute(this);
+        });
+
+        // 🔥 Команда удаления
         public ICommand DeleteCommand => new RelayCommand(() =>
         {
             _parentViewModel?.DeleteCommand?.Execute(this);
@@ -269,14 +289,12 @@ namespace SolarRent.ViewModels
         private readonly Action<object?> _executeWithParam;
         private readonly Func<bool>? _canExecute;
 
-        // Конструктор без параметра
         public RelayCommand(Action execute, Func<bool>? canExecute = null)
         {
             _execute = execute ?? throw new ArgumentNullException(nameof(execute));
             _canExecute = canExecute;
         }
 
-        // 🔥 Конструктор с параметром
         public RelayCommand(Action<object?> executeWithParam, Func<bool>? canExecute = null)
         {
             _executeWithParam = executeWithParam ?? throw new ArgumentNullException(nameof(executeWithParam));
