@@ -86,6 +86,16 @@ namespace SolarRent
                     AddHeaderButton("За месяц", () => { /* TODO */ });
                     AddHeaderButton("Экспорт", () => { /* TODO */ });
                     break;
+
+                case "Clients":
+                    PageTitleText.Text = "База клиентов";
+                    AddHeaderButton("+ Добавить клиента", () =>
+                    {
+                        var addWindow = App.Services.GetRequiredService<AddClient>();
+                        addWindow.ShowDialog();
+                    });
+                    AddHeaderButton("Экспорт", () => { });
+                    break;
             }
         }
 

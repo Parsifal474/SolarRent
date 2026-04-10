@@ -129,6 +129,7 @@
             <TabItem Header="Каталог" Style="{StaticResource NavigationTabItemStyle}" Tag="Catalog"/>
             <TabItem Header="Календарь аренды" Style="{StaticResource NavigationTabItemStyle}" Tag="Calendar"/>
             <TabItem Header="Отчёты" Style="{StaticResource NavigationTabItemStyle}" Tag="Reports"/>
+            <TabItem Header="Клиенты" Style="{StaticResource NavigationTabItemStyle}" Tag="Clients"/>
         </TabControl>
 
         <!-- ОСНОВНОЙ КОНТЕНТ (Frame) -->

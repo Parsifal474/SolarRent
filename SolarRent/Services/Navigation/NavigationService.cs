@@ -34,6 +34,7 @@ namespace SolarRent.Services.Navigation
                 "Catalog" => _serviceProvider.GetRequiredService<Catalog>(),
                 "Calendar" => _serviceProvider.GetRequiredService<RentalCalendar>(),
                 "Reports" => _serviceProvider.GetRequiredService<Reports>(),
+                "Clients" => _serviceProvider.GetRequiredService<Clients>(),
                 _ => throw new ArgumentException($"Unknown page: {pageKey}")
             };
 

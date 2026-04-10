@@ -17,10 +17,11 @@ namespace SolarRent
 {
     public partial class App : Application
     {
-        private static IHost _host;
+        private static IHost? _host; //изменено ?
 
         // 🔹 Статический доступ к сервисам
-        public static IServiceProvider Services => _host?.Services;
+        public static IServiceProvider Services => _host?.Services
+            ?? throw new InvalidOperationException("Хост не инициализирован"); // изменено, проверка by рыжик
 
         public App()
         {
@@ -68,6 +69,17 @@ namespace SolarRent
                     services.AddSingleton<MainWindow>();
 
                     services.AddSingleton<Services.Navigation.INavigationService, Services.Navigation.NavigationService>();
+
+                    services.AddScoped<ICalendarService, CalendarService>();
+                    services.AddTransient<RentalCalendarViewModel>();
+                    services.AddTransient<DayEventsWindow>();
+
+                    services.AddTransient<Views.DayEventsWindow>();
+
+                    services.AddScoped<IClientService, ClientService>();
+                    services.AddTransient<ClientsViewModel>();
+                    services.AddTransient<Views.Pages.Clients>();
+                    services.AddTransient<Views.ClientOrdersWindow>();
                 })
                 .Build();
         }

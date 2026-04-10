@@ -4,12 +4,12 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace SolarRent.Views.Pages
 {
-    public partial class RentalCalendar : Page
+    public partial class Clients : Page
     {
-        public RentalCalendar()
+        public Clients()
         {
             InitializeComponent();
-            DataContext = App.Services.GetRequiredService<RentalCalendarViewModel>();
+            DataContext = App.Services.GetRequiredService<ClientsViewModel>();
         }
     }
 }
