@@ -153,6 +153,7 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
@@ -183,8 +184,15 @@
                             </StackPanel>
                         </Grid>
 
+                        <!-- Предупреждение о чёрном списке -->
+                        <Border Grid.Row="3" Background="#FFEBEE" CornerRadius="6" Padding="10" Margin="0,0,0,15"
+                                Visibility="{Binding SelectedClient.IsBlacklisted, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <TextBlock Text="⚠️ Клиент находится в чёрном списке" FontWeight="SemiBold" Foreground="#C62828"
+                                       HorizontalAlignment="Center"/>
+                        </Border>
+
                         <!-- Юр. информация -->
-                        <StackPanel Grid.Row="3" Visibility="{Binding SelectedClient.Type, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Company'}">
+                        <StackPanel Grid.Row="4" Visibility="{Binding SelectedClient.Type, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Company'}">
                             <TextBlock Text="Юридическая информация" FontWeight="SemiBold" Margin="0,0,0,10"/>
                             <Grid Margin="0,0,0,15">
                                 <Grid.ColumnDefinitions>
@@ -203,7 +211,7 @@
                         </StackPanel>
 
                         <!-- Кнопки действий -->
-                        <StackPanel Grid.Row="5" Orientation="Horizontal" Margin="0,20,0,0">
+                        <StackPanel Grid.Row="6" Orientation="Horizontal" Margin="0,20,0,0">
                             <Button Content="История заказов" Width="140" Height="35" Margin="0,0,10,0"
                                     Command="{Binding ShowOrderHistoryCommand}"
                                     CommandParameter="{Binding SelectedClient}"
