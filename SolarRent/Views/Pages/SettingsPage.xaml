@@ -16,7 +16,7 @@
 
         <StackPanel Grid.Row="1" Margin="20,10" HorizontalAlignment="Center" VerticalAlignment="Center">
             <!-- Кнопка создания аккаунта (только для директора) -->
-            <Button Content="👤 Создать аккаунт сотрудника" 
+            <Button Content="Создать аккаунт сотрудника" 
                     Width="250" Height="50"
                     Background="#7C3AED" Foreground="White"
                     FontSize="16" FontWeight="SemiBold"

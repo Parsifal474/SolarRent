@@ -187,7 +187,7 @@
                         <!-- Предупреждение о чёрном списке -->
                         <Border Grid.Row="3" Background="#FFEBEE" CornerRadius="6" Padding="10" Margin="0,0,0,15"
                                 Visibility="{Binding SelectedClient.IsBlacklisted, Converter={StaticResource BooleanToVisibilityConverter}}">
-                            <TextBlock Text="⚠️ Клиент находится в чёрном списке" FontWeight="SemiBold" Foreground="#C62828"
+                            <TextBlock Text="Клиент находится в чёрном списке" FontWeight="SemiBold" Foreground="#C62828"
                                        HorizontalAlignment="Center"/>
                         </Border>
 

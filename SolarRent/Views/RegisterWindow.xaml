@@ -58,7 +58,7 @@
                     <!-- Подтверждение паролем директора -->
                     <Border Background="#FEF3C7" CornerRadius="6" Padding="15" Margin="0,0,0,20">
                         <StackPanel>
-                            <TextBlock Text="🔐 Подтверждение директора" 
+                            <TextBlock Text="Подтверждение директора" 
                                        FontSize="14" FontWeight="SemiBold" 
                                        Foreground="#92400E" Margin="0,0,0,10"/>
                             <TextBlock Text="Введите ваш пароль для подтверждения" 

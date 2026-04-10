@@ -84,8 +84,14 @@ namespace SolarRent
 
                 case "Reports":
                     PageTitleText.Text = "Отчеты и аналитика";
-                    AddHeaderButton("За месяц", () => { /* TODO */ });
-                    AddHeaderButton("Экспорт", () => { /* TODO */ });
+                    AddHeaderButton("📊 Экспорт", () =>
+                    {
+                        if (MainFrame.Content is Reports reportsPage &&
+                            reportsPage.DataContext is ReportsViewModel vm)
+                        {
+                            vm.ExportToCsvCommand?.Execute(null);  // Вызываем CSV-экспорт
+                        }
+                    });
                     break;
 
                 case "Clients":

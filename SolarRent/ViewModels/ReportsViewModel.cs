@@ -1,13 +1,12 @@
-﻿// ============================================================
-// ViewModel: Отчёты и аналитика
-// ============================================================
-
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Win32;
 using SolarRent.Services;
 using System;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -26,7 +25,6 @@ namespace SolarRent.ViewModels
         [ObservableProperty]
         private DateTime _endDate = DateTime.Today;
 
-        // 🔥 Основные показатели
         [ObservableProperty]
         private decimal _totalRevenue;
 
@@ -39,7 +37,6 @@ namespace SolarRent.ViewModels
         [ObservableProperty]
         private decimal _averageCheck;
 
-        // 🔥 Списки для отображения
         [ObservableProperty]
         private ObservableCollection<DebtorInfo> _debtors = new();
 
@@ -61,13 +58,11 @@ namespace SolarRent.ViewModels
             IsLoading = true;
             try
             {
-                // Загружаем основные показатели
                 TotalRevenue = await _reportService.GetTotalRevenueAsync(StartDate, EndDate);
                 TotalOrders = await _reportService.GetTotalOrdersAsync(StartDate, EndDate);
                 NewClients = await _reportService.GetNewClientsCountAsync(StartDate, EndDate);
                 AverageCheck = TotalOrders > 0 ? TotalRevenue / TotalOrders : 0;
 
-                // Загружаем списки
                 await LoadDebtorsAsync();
                 await LoadManagersAsync();
                 await LoadPopularEquipmentAsync();
@@ -82,7 +77,7 @@ namespace SolarRent.ViewModels
         {
             var debtors = await _reportService.GetDebtorsAsync();
             Debtors.Clear();
-            foreach (var d in debtors.Take(5)) // Показываем топ-5
+            foreach (var d in debtors.Take(5))
                 Debtors.Add(d);
         }
 
@@ -114,24 +109,119 @@ namespace SolarRent.ViewModels
             await LoadDataAsync();
         }
 
+        // 🔥 ЭКСПОРТ В CSV (как в ClientsViewModel)
         [RelayCommand]
-        private void ExportToExcel()
+        private void ExportToCsv()
         {
-            // TODO: Реализовать экспорт в Excel
-            MessageBox.Show("Экспорт в Excel будет добавлен в следующей версии",
-                "В разработке", MessageBoxButton.OK, MessageBoxImage.Information);
+            if (Debtors == null || Debtors.Count == 0)
+            {
+                MessageBox.Show("Нет данных для экспорта.", "Информация",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            var dialog = new SaveFileDialog
+            {
+                Filter = "CSV files (*.csv)|*.csv|All files (*.*)|*.*",
+                DefaultExt = "csv",
+                FileName = $"Отчёт_SolarRent_{StartDate:yyyyMMdd}_{EndDate:yyyyMMdd}.csv"
+            };
+
+            if (dialog.ShowDialog() == true)
+            {
+                try
+                {
+                    var csv = new StringBuilder();
+
+                    // ===== ЗАГОЛОВОК ОТЧЁТА =====
+                    csv.AppendLine($"ОТЧЁТ ПО АРЕНДЕ ОБОРУДОВАНИЯ");
+                    csv.AppendLine($"Период: {StartDate:dd.MM.yyyy} - {EndDate:dd.MM.yyyy}");
+                    csv.AppendLine();
+
+                    // ===== ОСНОВНЫЕ ПОКАЗАТЕЛИ =====
+                    csv.AppendLine("ОСНОВНЫЕ ПОКАЗАТЕЛИ");
+                    csv.AppendLine($"Общая выручка:;{TotalRevenue:N0} ₽");
+                    csv.AppendLine($"Количество заказов:;{TotalOrders}");
+                    csv.AppendLine($"Новых клиентов:;{NewClients}");
+                    csv.AppendLine($"Средний чек:;{AverageCheck:N0} ₽");
+                    csv.AppendLine();
+                    csv.AppendLine();
+
+                    // ===== ДОЛЖНИКИ =====
+                    csv.AppendLine("ДОЛЖНИКИ");
+                    csv.AppendLine("Клиент;Телефон;Заказ №;Сумма долга;Просрочка (дней);Дата возврата");
+
+                    foreach (var debtor in Debtors)
+                    {
+                        csv.AppendLine($"{Escape(debtor.ClientName)};" +
+                                      $"{Escape(debtor.Phone)};" +
+                                      $"{debtor.OrderId};" +
+                                      $"{debtor.DebtAmount:N0} ₽;" +
+                                      $"{debtor.DaysOverdue};" +
+                                      $"{debtor.DueDate:dd.MM.yyyy}");
+                    }
+                    csv.AppendLine();
+                    csv.AppendLine();
+
+                    // ===== ЭФФЕКТИВНОСТЬ МЕНЕДЖЕРОВ =====
+                    csv.AppendLine("ЭФФЕКТИВНОСТЬ МЕНЕДЖЕРОВ");
+                    csv.AppendLine("Менеджер;Заказов;Выручка;Клиентов");
+
+                    foreach (var manager in Managers)
+                    {
+                        csv.AppendLine($"{Escape(manager.FullName)};" +
+                                      $"{manager.OrdersCount};" +
+                                      $"{manager.Revenue:N0} ₽;" +
+                                      $"{manager.ClientsCount}");
+                    }
+                    csv.AppendLine();
+                    csv.AppendLine();
+
+                    // ===== ПОПУЛЯРНОЕ ОБОРУДОВАНИЕ =====
+                    csv.AppendLine("ПОПУЛЯРНОЕ ОБОРУДОВАНИЕ");
+                    csv.AppendLine("Название;Тип;Кол-во аренд;Выручка");
+
+                    foreach (var eq in PopularEquipment)
+                    {
+                        csv.AppendLine($"{Escape(eq.Name)};" +
+                                      $"{Escape(eq.TypeDisplay)};" +
+                                      $"{eq.RentCount};" +
+                                      $"{eq.TotalRevenue:N0} ₽");
+                    }
+
+                    File.WriteAllText(dialog.FileName, csv.ToString(), Encoding.UTF8);
+
+                    MessageBox.Show($"✅ Экспорт успешно завершён.\n\nФайл сохранён:\n{dialog.FileName}",
+                        "Экспорт", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"❌ Ошибка при экспорте: {ex.Message}", "Ошибка",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+
+        // Вспомогательный метод для экранирования CSV
+        private string Escape(string? input)
+        {
+            if (string.IsNullOrEmpty(input)) return "";
+            if (input.Contains(';') || input.Contains('"') || input.Contains('\n'))
+                return $"\"{input.Replace("\"", "\"\"")}\"";
+            return input;
         }
 
         [RelayCommand]
         private void ShowAllDebtors()
         {
-            var window = new Views.AllDebtorsWindow(Debtors.ToList());
+            var allDebtors = Debtors.ToList();
+            var window = new Views.AllDebtorsWindow(allDebtors);
             window.Owner = Application.Current.MainWindow;
             window.ShowDialog();
         }
     }
 
-    // 🔥 DTO-классы для отчётов
+    // DTO-классы остаются без изменений
     public class DebtorInfo
     {
         public int ClientId { get; set; }
