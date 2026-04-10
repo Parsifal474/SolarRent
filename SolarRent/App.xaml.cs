@@ -80,7 +80,7 @@ namespace SolarRent
                     services.AddTransient<DayEventsWindow>();
                     services.AddTransient<ClientOrdersWindow>();
                     services.AddTransient<Sale>();
-
+                    // После других ViewModel
                     services.AddTransient<LeaseAcceptanceViewModel>();
                 })
                 .Build();

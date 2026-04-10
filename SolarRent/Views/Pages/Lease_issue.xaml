@@ -2,13 +2,259 @@
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:SolarRent.Views.Pages"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:conv="clr-namespace:SolarRent.Converters"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
-      Title="Lease_issue">
+      d:DesignHeight="800" d:DesignWidth="900"
+      Title="Выдача аренды"
+      Background="#F5F5F5">
 
-    <Grid>
-        
-    </Grid>
+    <Page.Resources>
+        <conv:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+
+        <SolidColorBrush x:Key="PrimaryBlue" Color="#2E2EFF"/>
+        <SolidColorBrush x:Key="SuccessGreen" Color="#10B981"/>
+        <SolidColorBrush x:Key="DangerRed" Color="#EF4444"/>
+        <SolidColorBrush x:Key="WarningOrange" Color="#F59E0B"/>
+
+        <Style x:Key="CardStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="Padding" Value="20"/>
+            <Setter Property="Margin" Value="0,0,0,15"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect BlurRadius="8" ShadowDepth="1" Opacity="0.08"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="SectionHeaderStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#1F2937"/>
+            <Setter Property="Margin" Value="0,0,0,15"/>
+        </Style>
+
+        <Style x:Key="InfoRowStyle" TargetType="Grid">
+            <Setter Property="Margin" Value="0,0,0,10"/>
+        </Style>
+
+        <Style x:Key="PrimaryButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="{StaticResource PrimaryBlue}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="20,12"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#1a1aff"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Background" Value="#9CA3AF"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="SearchTextBoxStyle" TargetType="TextBox">
+            <Setter Property="Height" Value="45"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="15,0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#D1D5DB"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+        <Style x:Key="ComboBoxStyle" TargetType="ComboBox">
+            <Setter Property="Height" Value="45"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="10,0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#D1D5DB"/>
+            <Setter Property="Background" Value="White"/>
+        </Style>
+    </Page.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Заголовок -->
+            <Border Grid.Row="0" Background="{StaticResource PrimaryBlue}" CornerRadius="12" Padding="20" Margin="0,0,0,20">
+                <StackPanel>
+                    <TextBlock Text="Выдача аренды" FontSize="24" FontWeight="Bold" Foreground="White"/>
+                    <TextBlock Text="Оформление нового заказа на аренду оборудования" FontSize="13" Foreground="#E0E0FF" Margin="0,5,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Форма выдачи аренды -->
+            <Border Grid.Row="1" Style="{StaticResource CardStyle}">
+                <StackPanel>
+                    <TextBlock Text="Новый заказ на аренду" Style="{StaticResource SectionHeaderStyle}"/>
+
+                    <!-- Клиент -->
+                    <TextBlock Text="Клиент *" FontSize="14" FontWeight="SemiBold" Foreground="#374151" Margin="0,0,0,8"/>
+                    <ComboBox x:Name="cmbClient" 
+                              Style="{StaticResource ComboBoxStyle}"
+                              DisplayMemberPath="FullName"
+                              SelectionChanged="CmbClient_SelectionChanged"
+                              Margin="0,0,0,15"/>
+
+                    <!-- Оборудование -->
+                    <TextBlock Text="Оборудование *" FontSize="14" FontWeight="SemiBold" Foreground="#374151" Margin="0,0,0,8"/>
+                    <ComboBox x:Name="cmbEquipment" 
+          Style="{StaticResource ComboBoxStyle}"
+          SelectionChanged="CmbEquipment_SelectionChanged"
+          Margin="0,0,0,15">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="13"/>
+                                    <TextBlock FontSize="11" Foreground="#6B7280">
+                    <Run Text="{Binding TypeDisplay, Mode=OneWay}"/>  <!-- Добавить Mode=OneWay -->
+                    <Run Text=" | "/>
+                    <Run Text="{Binding PowerDisplay, Mode=OneWay}"/>
+                    <Run Text=" | "/>
+                    <Run Text="₽ "/>
+                    <Run Text="{Binding RentalPricePerDay, StringFormat={}{0:N0}, Mode=OneWay}"/>
+                    <Run Text="/день"/>
+                                    </TextBlock>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+
+                    <!-- Дата начала -->
+                    <DatePicker x:Name="dpStartDate" 
+            SelectedDateChanged="DpStartDate_SelectedDateChanged"
+            Margin="0,0,0,15"
+            Height="45"
+            FontSize="14"
+            Padding="10,0"
+            BorderThickness="1"
+            BorderBrush="#D1D5DB"
+            Background="White"/>
+                    <!-- Количество дней -->
+                    <TextBlock Text="Количество дней *" FontSize="14" FontWeight="SemiBold" Foreground="#374151" Margin="0,0,0,8"/>
+                    <TextBox x:Name="txtDays" 
+                             Style="{StaticResource SearchTextBoxStyle}"
+                             TextChanged="TxtDays_TextChanged"
+                             Margin="0,0,0,15"/>
+
+                    <!-- Дата окончания (авто) -->
+                    <TextBlock Text="Дата окончания" FontSize="14" FontWeight="SemiBold" Foreground="#374151" Margin="0,0,0,8"/>
+                    <TextBox x:Name="txtEndDate" 
+                             Style="{StaticResource SearchTextBoxStyle}"
+                             IsReadOnly="True"
+                             Background="#F3F4F6"
+                             Margin="0,0,0,15"/>
+
+                    <!-- Информационный блок с ценами -->
+                    <Border Background="#F0F0FF" CornerRadius="8" Padding="15" Margin="0,0,0,15">
+                        <StackPanel>
+                            <Grid Margin="0,0,0,8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="Цена за день:" FontWeight="SemiBold" Foreground="#374151"/>
+                                <TextBlock x:Name="lblPricePerDay" Grid.Column="1" Text="₽ 0" FontWeight="Bold" Foreground="#2E2EFF"/>
+                            </Grid>
+                            <Grid Margin="0,0,0,8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="Залог:" FontWeight="SemiBold" Foreground="#374151"/>
+                                <TextBlock x:Name="lblDeposit" Grid.Column="1" Text="₽ 0" FontWeight="Bold" Foreground="#2E2EFF"/>
+                            </Grid>
+                            <Separator Margin="0,8,0,8" Background="#D1D5DB"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="Итого:" FontSize="16" FontWeight="Bold" Foreground="#1F2937"/>
+                                <TextBlock x:Name="lblTotal" Grid.Column="1" Text="₽ 0" FontSize="16" FontWeight="Bold" Foreground="#2E2EFF"/>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Скидка -->
+                    <TextBlock Text="Скидка (%)" FontSize="14" FontWeight="SemiBold" Foreground="#374151" Margin="0,0,0,8"/>
+                    <TextBox x:Name="txtDiscount" 
+                             Style="{StaticResource SearchTextBoxStyle}"
+                             TextChanged="TxtDiscount_TextChanged"
+                             Margin="0,0,0,15"/>
+
+                    <!-- Примечание -->
+                    <TextBlock Text="Примечание" FontSize="14" FontWeight="SemiBold" Foreground="#374151" Margin="0,0,0,8"/>
+                    <TextBox x:Name="txtNote" 
+                             Height="80" 
+                             Padding="10" 
+                             FontSize="13"
+                             TextWrapping="Wrap" 
+                             AcceptsReturn="True"
+                             BorderThickness="1" 
+                             BorderBrush="#D1D5DB"
+                             Margin="0,0,0,15"/>
+                    <!-- Предупреждение о чёрном списке -->
+                    <Border x:Name="warningBlacklist" 
+                            Background="#FEF3C7" 
+                            CornerRadius="8" 
+                            Padding="12" 
+                            Margin="0,0,0,15"
+                            Visibility="Collapsed">
+                        <TextBlock Text="⚠️ Клиент находится в чёрном списке! Выдача аренды заблокирована."
+                                   Foreground="#92400E" FontWeight="SemiBold" FontSize="13"
+                                   TextWrapping="Wrap"/>
+                    </Border>
+
+                    <!-- Кнопки -->
+                    <Grid Margin="0,10,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0" FontSize="12" Foreground="#6B7280" VerticalAlignment="Center">
+                            * Все поля обязательны для заполнения
+                        </TextBlock>
+
+                        <Button Grid.Column="1" 
+                                x:Name="btnCreateRental"
+                                Content="✅ Оформить аренду" 
+                                Style="{StaticResource PrimaryButtonStyle}"
+                                Click="CreateRentalButton_Click"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Статус сообщение -->
+            <TextBlock x:Name="txtStatusMessage" Grid.Row="2" 
+                       FontSize="13" Foreground="{StaticResource WarningOrange}"
+                       TextWrapping="Wrap" Margin="0,0,0,15"
+                       Visibility="Collapsed"/>
+
+            <!-- Индикатор загрузки -->
+            <ProgressBar Grid.Row="3" IsIndeterminate="True" Height="4" 
+                         x:Name="progressBar" Visibility="Collapsed"/>
+        </Grid>
+    </ScrollViewer>
 </Page>

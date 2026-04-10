@@ -137,6 +137,17 @@ namespace SolarRent
                         }
                     });
                     break;
+                case "LeaseIssue":
+                    PageTitleText.Text = "Выдача аренды";
+                    AddHeaderButton("Новая аренда", () =>
+                    {
+                        // Уже на странице, просто обновляем данные
+                        if (MainFrame.Content is Views.Pages.Lease_issue leasePage)
+                        {
+                            // Можно вызвать метод обновления
+                        }
+                    });
+                    break;
             }
         }
 
