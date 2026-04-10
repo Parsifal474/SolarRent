@@ -4,5 +4,6 @@
              xmlns:conv="clr-namespace:SolarRent.Converters">
     <Application.Resources>
         <conv:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <conv:RadioButtonCheckedConverter x:Key="RadioButtonCheckedConverter"/>
     </Application.Resources>
 </Application>
