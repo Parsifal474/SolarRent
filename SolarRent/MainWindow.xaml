@@ -135,6 +135,7 @@
             <TabItem Header="Календарь аренды" Style="{StaticResource NavigationTabItemStyle}" Tag="Calendar"/>
             <TabItem Header="Отчёты" Style="{StaticResource NavigationTabItemStyle}" Tag="Reports"/>
             <TabItem Header="Клиенты" Style="{StaticResource NavigationTabItemStyle}" Tag="Clients"/>
+			<TabItem Header="новое что-то" Style="{StaticResource NavigationTabItemStyle}" Tag="EquipmentProcessingWindow"/>
         </TabControl>
 
         <!-- ОСНОВНОЙ КОНТЕНТ (Frame) -->

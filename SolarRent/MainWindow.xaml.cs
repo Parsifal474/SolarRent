@@ -123,8 +123,10 @@ namespace SolarRent
                         }
                     });
                     break;
+            
             }
         }
+        
 
         private void AddHeaderButton(string text, System.Action onClick)
         {
@@ -136,5 +138,6 @@ namespace SolarRent
             button.Click += (s, e) => onClick();
             ActionButtonsPanel.Children.Add(button);
         }
+       
     }
 }

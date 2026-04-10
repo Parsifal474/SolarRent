@@ -1,0 +1,223 @@
+﻿<Window x:Class="SolarRent.Views.EquipmentProcessingWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:converters="clr-namespace:SolarRent.Converters"
+        Title="Выдача и возврат оборудования" 
+        Height="800" Width="1200"
+        WindowStartupLocation="CenterScreen"
+        Background="#F5F5F5">
+
+    <Window.Resources>
+        <!-- Конвертеры -->
+        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
+        <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+
+        <!-- Цвета -->
+        <SolidColorBrush x:Key="PrimaryOrange" Color="#FF6B35"/>
+        <SolidColorBrush x:Key="SecondaryGray" Color="#9E9E9E"/>
+        <SolidColorBrush x:Key="LightBlue" Color="#E3F2FD"/>
+        <SolidColorBrush x:Key="LightPurple" Color="#F3E5F5"/>
+
+        <!-- Стили кнопок -->
+        <Style x:Key="TabButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="{StaticResource SecondaryGray}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="30,15"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="8,8,0,0"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="InfoCardStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="15"/>
+            <Setter Property="Margin" Value="0,10,0,10"/>
+        </Style>
+
+        <Style x:Key="EquipmentItemStyle" TargetType="Border">
+            <Setter Property="Background" Value="#F5F5F5"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="Margin" Value="0,5,0,5"/>
+        </Style>
+
+        <Style x:Key="ActionButtonStyle" TargetType="Button">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="20,12"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Margin" Value="5"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Вкладки: Выдача / Возврат -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,20">
+            <Button Content="Выдача оборудования" 
+                    Style="{StaticResource TabButtonStyle}"
+                    Background="{StaticResource PrimaryOrange}"
+                    IsEnabled="False"/>
+            <Button Content="Возврат оборудования" 
+                    Style="{StaticResource TabButtonStyle}"
+                    Background="{StaticResource SecondaryGray}"
+                    IsEnabled="True"/>
+        </StackPanel>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="400"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Левая панель: Информация о заказе -->
+            <Border Grid.Column="0" Background="White" CornerRadius="8" Padding="20">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <TextBlock Text="Информация о заказе" FontSize="18" FontWeight="Bold" Margin="0,0,0,15"/>
+
+                        <!-- Номер заказа -->
+                        <Border Style="{StaticResource InfoCardStyle}">
+                            <StackPanel>
+                                <TextBlock Text="Номер заказа" FontSize="12" Foreground="#666"/>
+                                <TextBlock x:Name="LblOrderNumber"
+                                           Text="#1024" 
+                                           FontSize="20" FontWeight="Bold" Foreground="{StaticResource PrimaryOrange}"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Детали заказа -->
+                        <Border Style="{StaticResource InfoCardStyle}" Background="#FFE0B2">
+                            <StackPanel>
+                                <TextBlock x:Name="LblClient" Text="Клиент: ООО &quot;Энергия&quot;" FontWeight="Bold" Margin="0,0,0,5"/>
+                                <TextBlock x:Name="LblPeriod" Text="Период: 15.03.2025 - 20.03.2025" FontSize="12" Margin="0,0,0,5"/>
+                                <TextBlock x:Name="LblAmount" Text="Сумма: 22 500 ₽" FontWeight="Bold" FontSize="14"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Список оборудования -->
+                        <TextBlock Text="Оборудование для выдачи" FontSize="16" FontWeight="SemiBold" Margin="0,20,0,10"/>
+                        <Border Style="{StaticResource EquipmentItemStyle}">
+                            <StackPanel>
+                                <TextBlock Text="Солнечная панель 300W" FontWeight="SemiBold"/>
+                                <TextBlock Text="S/N: 300-2025-001" FontSize="12" Foreground="#666"/>
+                                <TextBlock Text="Тип: Panel" FontSize="12" Foreground="#666"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Примечания -->
+                        <TextBlock Text="Примечания" FontSize="16" FontWeight="SemiBold" Margin="0,20,0,10"/>
+                        <TextBox x:Name="TxtNotes" 
+                                 Height="80" 
+                                 TextWrapping="Wrap" 
+                                 AcceptsReturn="True"
+                                 Padding="10"
+                                 BorderBrush="#DDD"
+                                 BorderThickness="1"/>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+
+            <!-- Правая панель: Фото и действия -->
+            <Border Grid.Column="1" Background="White" CornerRadius="8" Padding="20" Margin="20,0,0,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Фотофиксация -->
+                    <StackPanel Grid.Row="0">
+                        <TextBlock Text="Фотофиксация состояния" FontSize="18" FontWeight="Bold" Margin="0,0,0,15"/>
+
+                        <Button x:Name="BtnAddPhoto" Content="📷 Добавить фото" 
+                                Background="#E3F2FD"
+                                Foreground="#1976D2"
+                                Padding="15,10"
+                                Margin="0,0,0,15"
+                                Click="BtnAddPhoto_Click"/>
+
+                        <ItemsControl x:Name="ListPhotos">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                    </StackPanel>
+
+                    <!-- Документы -->
+                    <Border Grid.Row="1" Background="#F5F5F5" CornerRadius="8" Padding="15" Margin="0,20,0,20">
+                        <StackPanel>
+                            <TextBlock Text="Документы" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,10"/>
+
+                            <Button x:Name="BtnCertificate" Content="Распечатать акт приема-выдачи" 
+                                    Background="{StaticResource LightBlue}"
+                                    Style="{StaticResource ActionButtonStyle}"
+                                    Click="BtnCertificate_Click"/>
+
+                            <Button x:Name="BtnAgreement" Content="Сформировать договор аренды" 
+                                    Background="{StaticResource LightPurple}"
+                                    Style="{StaticResource ActionButtonStyle}"
+                                    Click="BtnAgreement_Click"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Кнопки действий -->
+                    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Button x:Name="BtnIssue" Content="Подтвердить выдачу" 
+                                Background="{StaticResource PrimaryOrange}"
+                                Foreground="White"
+                                Width="200"
+                                Height="45"
+                                Style="{StaticResource ActionButtonStyle}"
+                                Click="BtnIssue_Click"/>
+
+                        <Button x:Name="BtnReturn" Content="Подтвердить возврат" 
+                                Background="#4CAF50"
+                                Foreground="White"
+                                Width="200"
+                                Height="45"
+                                Style="{StaticResource ActionButtonStyle}"
+                                Click="BtnReturn_Click"
+                                Visibility="Collapsed"/>
+
+                        <Button Content="Отменить" 
+                                Background="#E0E0E0"
+                                Foreground="#333"
+                                Width="150"
+                                Height="45"
+                                Style="{StaticResource ActionButtonStyle}"
+                                Click="BtnCancel_Click"/>
+                    </StackPanel>
+
+                    <!-- Статус -->
+                    <TextBlock x:Name="LblStatus" Grid.Row="2" 
+                               HorizontalAlignment="Center" 
+                               Margin="0,10,0,0"
+                               Foreground="#666"/>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>

@@ -36,6 +36,7 @@ namespace SolarRent.Services.Navigation
                 "Reports" => _serviceProvider.GetRequiredService<Reports>(),
                 "Clients" => _serviceProvider.GetRequiredService<Clients>(),
                 _ => throw new ArgumentException($"Unknown page: {pageKey}")
+
             };
 
             if (_mainFrame.Content != null)
