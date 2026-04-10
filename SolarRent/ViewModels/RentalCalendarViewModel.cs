@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Microsoft.Extensions.Logging;
 using SolarRent.Services;
 using System;
 using System.Collections.Generic;
@@ -8,42 +7,38 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Input;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SolarRent.ViewModels
 {
     public partial class RentalCalendarViewModel : ObservableObject
     {
         private readonly ICalendarService _calendarService;
-        private readonly IServiceProvider _serviceProvider;
 
         [ObservableProperty]
         private DateTime _currentMonth;
 
         [ObservableProperty]
-        private ObservableCollection<CalendarDay> _days;
+        private ObservableCollection<CalendarDay> _days = new();
 
         [ObservableProperty]
         private bool _isLoading;
 
-        public RentalCalendarViewModel(ICalendarService calendarService, IServiceProvider serviceProvider)
+        public RentalCalendarViewModel(ICalendarService calendarService)
         {
             _calendarService = calendarService;
-            _serviceProvider = serviceProvider;
             CurrentMonth = DateTime.Today;
-            Days = new ObservableCollection<CalendarDay>();
             _ = LoadMonthAsync();
         }
 
         [RelayCommand]
         private async Task LoadMonthAsync()
         {
+            if (IsLoading) return;
             IsLoading = true;
             try
             {
                 var events = await _calendarService.GetMonthEventsAsync(CurrentMonth.Year, CurrentMonth.Month);
-                GenerateCalendarDays(events);
+                GenerateDays(events);
             }
             finally
             {
@@ -75,14 +70,14 @@ namespace SolarRent.ViewModels
             detailsWindow.ShowDialog();
         }
 
-        private void GenerateCalendarDays(Dictionary<DateTime, List<CalendarEvent>> events)
+        private void GenerateDays(Dictionary<DateTime, List<CalendarEvent>> events)
         {
             Days.Clear();
             var firstOfMonth = new DateTime(CurrentMonth.Year, CurrentMonth.Month, 1);
-            int startOffset = ((int)firstOfMonth.DayOfWeek + 6) % 7; // Пн = 0, Вс = 6
+            int startOffset = ((int)firstOfMonth.DayOfWeek + 6) % 7; // Пн = 0
             var startDate = firstOfMonth.AddDays(-startOffset);
 
-            for (int i = 0; i < 42; i++) // 6 недель
+            for (int i = 0; i < 42; i++)
             {
                 var date = startDate.AddDays(i);
                 var day = new CalendarDay
@@ -108,7 +103,8 @@ namespace SolarRent.ViewModels
         private List<CalendarEvent> _events = new();
 
         public string DayNumber => Date.Day.ToString();
-        public string TooltipText => Events.Count > 0
+        public bool HasEvents => Events.Count > 0;
+        public string TooltipText => HasEvents
             ? string.Join("\n", Events.Select(e => $"{e.EventType}: {e.EquipmentName}"))
             : "Нет событий";
     }

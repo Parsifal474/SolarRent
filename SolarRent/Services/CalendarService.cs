@@ -19,45 +19,41 @@ namespace SolarRent.Services
 
         public async Task<Dictionary<DateTime, List<CalendarEvent>>> GetMonthEventsAsync(int year, int month)
         {
-            var startDate = new DateTime(year, month, 1);
+            // Используем UTC для совместимости с PostgreSQL timestamp with time zone
+            var startDate = new DateTime(year, month, 1, 0, 0, 0, DateTimeKind.Utc);
             var endDate = startDate.AddMonths(1).AddDays(-1);
 
-            // Загружаем аренды за период
             var rentals = await _context.RentalOrders
                 .Include(r => r.Equipment)
                 .Include(r => r.Client)
                 .Where(r => r.StartDate <= endDate && r.EndDate >= startDate)
                 .ToListAsync();
 
-            // Загружаем продажи (если есть отдельная таблица SaleOrder, пока используем аренды со статусом "Sold"? 
-            // Допустим, продажи пока не реализованы, оставим только аренды. Можно расширить позже.
-            // Для демонстрации создадим словарь событий по дням.
-
             var eventsByDay = new Dictionary<DateTime, List<CalendarEvent>>();
 
             foreach (var rental in rentals)
             {
-                // Для каждого дня аренды добавляем событие
-                for (var date = rental.StartDate.Date; date <= rental.EndDate.Date; date = date.AddDays(1))
+                var current = rental.StartDate.Date;
+                while (current <= rental.EndDate.Date)
                 {
-                    if (!eventsByDay.ContainsKey(date))
-                        eventsByDay[date] = new List<CalendarEvent>();
+                    if (!eventsByDay.ContainsKey(current))
+                        eventsByDay[current] = new List<CalendarEvent>();
 
-                    eventsByDay[date].Add(new CalendarEvent
+                    eventsByDay[current].Add(new CalendarEvent
                     {
                         Id = rental.Id,
                         Title = $"Аренда #{rental.Id}",
                         EquipmentName = rental.Equipment?.Name ?? "—",
                         ClientName = rental.Client?.FullName ?? "—",
                         EventType = "Аренда",
-                        Date = date,
+                        Date = current,
                         Amount = rental.RentalPrice,
                         Status = rental.Status
                     });
+
+                    current = current.AddDays(1);
                 }
             }
-
-            // TODO: добавить продажи, если будет модель
 
             return eventsByDay;
         }
