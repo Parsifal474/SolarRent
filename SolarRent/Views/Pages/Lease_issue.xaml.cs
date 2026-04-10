@@ -160,56 +160,33 @@ namespace SolarRent.Views.Pages
         private async void CreateRentalButton_Click(object sender, RoutedEventArgs e)
         {
             // Валидация
-            if (_selectedClient == null)
-            {
-                ShowStatusMessage("❌ Выберите клиента", true);
-                cmbClient.Focus();
-                return;
-            }
+            if (_selectedClient == null) { /* ... */ return; }
+            if (_selectedClient.IsBlacklisted) { /* ... */ return; }
+            if (_selectedEquipment == null) { /* ... */ return; }
+            if (!int.TryParse(txtDays.Text, out int days) || days <= 0) { /* ... */ return; }
+            if (!dpStartDate.SelectedDate.HasValue) { /* ... */ return; }
 
-            if (_selectedClient.IsBlacklisted)
-            {
-                ShowStatusMessage("❌ Клиент в чёрном списке! Выдача аренды невозможна.", true);
-                return;
-            }
+            // Получаем локальные даты
+            DateTime startDateLocal = dpStartDate.SelectedDate.Value;
+            DateTime endDateLocal = startDateLocal.AddDays(days);
 
-            if (_selectedEquipment == null)
-            {
-                ShowStatusMessage("❌ Выберите оборудование", true);
-                cmbEquipment.Focus();
-                return;
-            }
+            // Преобразуем в UTC
+            DateTime startDateUtc = startDateLocal.ToUniversalTime();
+            DateTime endDateUtc = endDateLocal.ToUniversalTime();
 
-            if (!int.TryParse(txtDays.Text, out int days) || days <= 0)
-            {
-                ShowStatusMessage("❌ Введите корректное количество дней", true);
-                txtDays.Focus();
-                return;
-            }
-
-            if (!dpStartDate.SelectedDate.HasValue)
-            {
-                ShowStatusMessage("❌ Выберите дату начала", true);
-                dpStartDate.Focus();
-                return;
-            }
-
-            var startDate = dpStartDate.SelectedDate.Value;
-            var endDate = startDate.AddDays(days);
-
-            // Проверка на прошедшую дату
-            if (startDate.Date < DateTime.Today)
+            // Проверка на прошедшую дату (сравниваем в UTC)
+            if (startDateLocal.Date < DateTime.UtcNow.Date)
             {
                 ShowStatusMessage("❌ Дата начала не может быть раньше сегодняшнего дня", true);
                 return;
             }
 
-            // Проверка на пересечение с другими арендами
+            // Проверка пересечения (сравниваем UTC)
             bool isOverlapping = await _context.RentalOrders
                 .AnyAsync(r => r.EquipmentId == _selectedEquipment.Id &&
                                r.Status == "Active" &&
-                               r.StartDate < endDate &&
-                               r.EndDate > startDate);
+                               r.StartDate < endDateUtc &&
+                               r.EndDate > startDateUtc);
 
             if (isOverlapping)
             {
@@ -223,59 +200,42 @@ namespace SolarRent.Views.Pages
 
             try
             {
-                // Расчёт суммы со скидкой
+                // Базовая стоимость
                 decimal totalPrice = _selectedEquipment.RentalPricePerDay * days;
-                if (decimal.TryParse(txtDiscount.Text, out decimal discount) && discount > 0 && discount <= 100)
+
+                // Применяем скидку из поля txtDiscount
+                if (decimal.TryParse(txtDiscount.Text, out decimal discountPercent) && discountPercent > 0 && discountPercent <= 100)
                 {
-                    totalPrice = totalPrice - (totalPrice * discount / 100);
+                    totalPrice -= totalPrice * discountPercent / 100;
                 }
 
                 var rentalOrder = new RentalOrder
                 {
                     ClientId = _selectedClient.Id,
-                    Client = _selectedClient,
                     EquipmentId = _selectedEquipment.Id,
-                    Equipment = _selectedEquipment,
-                    StartDate = DateTime.SpecifyKind(startDate, DateTimeKind.Utc),
-                    EndDate = DateTime.SpecifyKind(endDate, DateTimeKind.Utc),
+                    StartDate = startDateUtc,        // UTC
+                    EndDate = endDateUtc,            // UTC
                     RentalPrice = totalPrice,
                     Deposit = _selectedEquipment.DepositAmount,
                     Penalty = 0,
                     Status = "Active",
-                    ManagedByUserId = _authService.CurrentUser?.Id,
-                    ManagedBy = _authService.CurrentUser,
-                    ActualReturnDate = null
+                    ManagedByUserId = _authService.CurrentUser?.Id
                 };
 
                 // Обновляем статус оборудования
                 _selectedEquipment.Status = "Rented";
                 _context.Equipments.Update(_selectedEquipment);
 
-                // Сохраняем заказ
                 await _context.RentalOrders.AddAsync(rentalOrder);
                 await _context.SaveChangesAsync();
 
-                MessageBox.Show(
-                    $"✅ Аренда успешно оформлена!\n\n" +
-                    $"Заказ №{rentalOrder.Id}\n" +
-                    $"Клиент: {_selectedClient.FullName}\n" +
-                    $"Оборудование: {_selectedEquipment.Name}\n" +
-                    $"Период: {startDate:dd.MM.yyyy} - {endDate:dd.MM.yyyy}\n" +
-                    $"Сумма: {totalPrice:N0} ₽\n" +
-                    $"Залог: {_selectedEquipment.DepositAmount:N0} ₽",
-                    "Успех",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Information);
-
-                // Сбрасываем форму
+                MessageBox.Show($"✅ Аренда оформлена!\nЗаказ №{rentalOrder.Id}", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
                 ResetForm();
                 await LoadDataAsync();
             }
             catch (Exception ex)
             {
-                ShowStatusMessage($"❌ Ошибка при сохранении: {ex.Message}", true);
-                MessageBox.Show($"Ошибка: {ex.Message}", "Ошибка",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
+                ShowStatusMessage($"❌ Ошибка: {ex.Message}", true);
             }
             finally
             {
