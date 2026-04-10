@@ -109,28 +109,31 @@
         <Border Grid.Row="1" Background="White" Padding="30" Margin="10">
             <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <StackPanel>
-                    <!-- Name -->
-                    <TextBlock Text="Name (Наименование) *" Style="{StaticResource LabelStyle}"/>
+                    <!-- Name (ФИО / Контактное лицо) -->
+                    <TextBlock Text="ФИО / Контактное лицо *" Style="{StaticResource LabelStyle}"/>
                     <TextBox x:Name="txtName" Style="{StaticResource InputStyle}"/>
 
-                    <!-- INN -->
-                    <TextBlock Text="INN (ИНН)" Style="{StaticResource LabelStyle}"/>
-                    <TextBox x:Name="txtINN" Style="{StaticResource InputStyle}"/>
+                    <!-- Company Name -->
+                    <TextBlock Text="Название компании" Style="{StaticResource LabelStyle}"/>
+                    <TextBox x:Name="txtCompanyName" Style="{StaticResource InputStyle}"/>
 
-                    <!-- KPP -->
-                    <TextBlock Text="KPP (КПП)" Style="{StaticResource LabelStyle}"/>
-                    <TextBox x:Name="txtKPP" Style="{StaticResource InputStyle}"/>
+                    <!-- INN -->
+                    <TextBlock Text="ИНН" Style="{StaticResource LabelStyle}"/>
+                    <TextBox x:Name="txtINN" Style="{StaticResource InputStyle}" MaxLength="12"/>
 
                     <!-- Phone -->
-                    <TextBlock Text="Phone (Телефон) *" Style="{StaticResource LabelStyle}"/>
-                    <TextBox x:Name="txtPhone" Style="{StaticResource InputStyle}"/>
+                    <TextBlock Text="Телефон *" Style="{StaticResource LabelStyle}"/>
+                    <TextBox x:Name="txtPhone" 
+                             Style="{StaticResource InputStyle}" 
+                             PreviewTextInput="Phone_PreviewTextInput"
+                             Loaded="Phone_Loaded"/>
 
                     <!-- Email -->
                     <TextBlock Text="Email" Style="{StaticResource LabelStyle}"/>
                     <TextBox x:Name="txtEmail" Style="{StaticResource InputStyle}"/>
 
                     <!-- Adress -->
-                    <TextBlock Text="Adress (Адрес)" Style="{StaticResource LabelStyle}"/>
+                    <TextBlock Text="Адрес" Style="{StaticResource LabelStyle}"/>
                     <TextBox x:Name="txtAdress" 
                              Height="80" 
                              Margin="0,0,0,15"
@@ -145,7 +148,7 @@
 
                     <!-- Is_blacklisted -->
                     <CheckBox x:Name="chkIsBlacklisted" 
-                              Content="Is_blacklisted (В чёрном списке)" 
+                              Content="В чёрном списке" 
                               Style="{StaticResource CheckBoxStyle}"/>
                 </StackPanel>
             </ScrollViewer>
@@ -161,11 +164,11 @@
                 </Grid.ColumnDefinitions>
 
                 <Button Grid.Column="1" 
-                Content="Отмена" 
-                 Style="{StaticResource CancelButtonStyle}"
-                Width="120"
-                Margin="0,0,10,0"
-                Click="CancelButton_Click"/>
+                        Content="Отмена" 
+                        Style="{StaticResource CancelButtonStyle}"
+                        Width="120"
+                        Margin="0,0,10,0"
+                        Click="CancelButton_Click"/>
 
                 <Button Grid.Column="2" 
                         Content="Сохранить" 
