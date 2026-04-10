@@ -106,7 +106,17 @@ namespace SolarRent
                         };
                         addWindow.ShowDialog();
                     });
-                    AddHeaderButton("Экспорт", () => { });
+                    AddHeaderButton("Экспорт", () =>
+                    {
+                        if (MainFrame.Content is Clients clientsPage && clientsPage.DataContext is ClientsViewModel vm)
+                        {
+                            vm.ExportToCsvCommand?.Execute(null);
+                        }
+                        else
+                        {
+                            MessageBox.Show("Не удалось получить данные для экспорта.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        }
+                    });
                     break;
             }
         }

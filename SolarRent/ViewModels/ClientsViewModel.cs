@@ -1,9 +1,12 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Win32;
 using SolarRent.Models;
 using SolarRent.Services;
 using System;
 using System.Collections.ObjectModel;
+using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -103,8 +106,7 @@ namespace SolarRent.ViewModels
         private async Task EditClientAsync(Client? client)
         {
             if (client == null) return;
-            // Открываем окно редактирования (можно использовать то же AddClient с параметрами)
-            // Пока пропустим
+            // TODO: открыть окно редактирования
             MessageBox.Show("Редактирование клиента (в разработке)");
             await Task.CompletedTask;
         }
@@ -132,6 +134,60 @@ namespace SolarRent.ViewModels
         {
             SearchQuery = string.Empty;
             _ = LoadDataAsync();
+        }
+
+        [RelayCommand]
+        private void ExportToCsv()
+        {
+            if (Clients == null || Clients.Count == 0)
+            {
+                MessageBox.Show("Нет данных для экспорта.", "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            var dialog = new SaveFileDialog
+            {
+                Filter = "CSV files (*.csv)|*.csv|All files (*.*)|*.*",
+                DefaultExt = "csv",
+                FileName = $"Clients_Export_{DateTime.Now:yyyyMMdd_HHmmss}.csv"
+            };
+
+            if (dialog.ShowDialog() == true)
+            {
+                try
+                {
+                    var csv = new StringBuilder();
+                    // Заголовки столбцов
+                    csv.AppendLine("Id,Тип,ФИО/Контактное лицо,Компания,ИНН,Телефон,Email,Адрес,Чёрный список");
+
+                    foreach (var client in Clients)
+                    {
+                        string Escape(string? input) => input?.Contains(',') == true || input?.Contains('"') == true
+                            ? $"\"{input?.Replace("\"", "\"\"")}\""
+                            : input ?? "";
+
+                        var line = string.Join(",",
+                            client.Id,
+                            Escape(client.Type == "Company" ? "Юр. лицо" : "Физ. лицо"),
+                            Escape(client.FullName),
+                            Escape(client.CompanyName),
+                            Escape(client.TaxId),
+                            Escape(client.Phone),
+                            Escape(client.Email),
+                            Escape(client.Address),
+                            client.IsBlacklisted ? "Да" : "Нет"
+                        );
+                        csv.AppendLine(line);
+                    }
+
+                    File.WriteAllText(dialog.FileName, csv.ToString(), Encoding.UTF8);
+                    MessageBox.Show($"Экспорт успешно завершён.\nФайл сохранён: {dialog.FileName}", "Экспорт", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ошибка при экспорте: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
         }
     }
 }
