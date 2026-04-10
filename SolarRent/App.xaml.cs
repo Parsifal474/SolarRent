@@ -82,23 +82,9 @@ namespace SolarRent
                     services.AddTransient<ClientsViewModel>();
                     services.AddTransient<Views.Pages.Clients>();
                     services.AddTransient<Views.ClientOrdersWindow>();
-
-                    // Добавьте в App.xaml.cs в метод ConfigureServices:
-
-                    // Сервис обработки заказов
-                    services.AddScoped<IRentalOrderProcessingService, RentalOrderProcessingService>();
-
-                    // ViewModel
-                    services.AddTransient<EquipmentProcessingViewModel>();
-
-                    // Окно
-                    services.AddTransient<Views.EquipmentProcessingWindow>();
-
-                    // Конвертеры (добавьте в Resources)
                 })
                 .Build();
         }
-        
 
         protected override async void OnStartup(StartupEventArgs e)
         {
@@ -145,7 +131,5 @@ namespace SolarRent
 
             base.OnExit(e);
         }
-
     }
-
 }

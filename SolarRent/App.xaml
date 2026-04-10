@@ -1,16 +1,6 @@
 ﻿<Application x:Class="SolarRent.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:converters="clr-namespace:SolarRent.Converters"
-             StartupUri="Views/Login.xaml">
-
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Application.Resources>
-        <!-- Конвертеры -->
-        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
-        <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
-
-        <!-- Встроенный конвертер из системы -->
-        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
     </Application.Resources>
-
 </Application>
