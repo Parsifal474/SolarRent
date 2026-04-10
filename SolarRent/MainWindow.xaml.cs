@@ -1,62 +1,103 @@
 ﻿using System.Windows;
-using SolarRent.Views;
+using System.Windows.Controls;
+using Microsoft.Extensions.DependencyInjection;
+using SolarRent.Services.Navigation;
+using SolarRent.ViewModels;
 
 namespace SolarRent
 {
-    public partial class MainDashboardWindow : Window
+    public partial class MainWindow : Window
     {
-        private Catalog _catalogWindow;
+        private readonly INavigationService _navigationService;
+        private string? _currentPageKey;
 
-        public MainDashboardWindow()
+        public MainWindow(INavigationService navigationService)
         {
             InitializeComponent();
+            _navigationService = navigationService;
+
+            if (_navigationService is NavigationService ns)
+                ns.Initialize(MainFrame);
+
+            DataContext = new NavigationViewModel(_navigationService);
+
+            MainFrame.Navigated += MainFrame_Navigated;
+
+            // Стартовая страница
+            _navigationService.NavigateTo("Catalog");
+            _currentPageKey = "Catalog";
+            UpdateHeaderForPage("Catalog");
+            NavigationTabControl.SelectedIndex = 0;
         }
 
-        private void CatalogButton_Click(object sender, RoutedEventArgs e)
+        private void NavigationTabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            // Если окно каталога еще не создано или закрыто
-            if (_catalogWindow == null || !_catalogWindow.IsVisible)
+            if (NavigationTabControl.SelectedItem is TabItem selectedTab && selectedTab.Tag != null)
             {
-                _catalogWindow = new Catalog();
-                _catalogWindow.Show();
+                string pageKey = selectedTab.Tag.ToString()!;
+                if (pageKey != _currentPageKey)
+                {
+                    _navigationService.NavigateTo(pageKey);
+                    _currentPageKey = pageKey;
+                    UpdateHeaderForPage(pageKey);
+                }
             }
-            else
+        }
+
+        private void MainFrame_Navigated(object sender, System.Windows.Navigation.NavigationEventArgs e)
+        {
+            if (e.Content is Page page)
             {
-                // Если окно уже открыто - активируем его
-                _catalogWindow.Activate();
-                _catalogWindow.WindowState = WindowState.Normal;
-                _catalogWindow.Focus();
+                string pageKey = page.GetType().Name.Replace("Page", "");
+                _currentPageKey = pageKey;
+                UpdateHeaderForPage(pageKey);
             }
         }
 
-        private void AddClientButton_Click(object sender, RoutedEventArgs e)
+        private void UpdateHeaderForPage(string pageKey)
         {
-            var addClientWindow = new AddClient();
-            addClientWindow.ShowDialog();
-        }
+            ActionButtonsPanel.Children.Clear();
 
-        private void CalendarButton_Click(object sender, RoutedEventArgs e)
-        {
-            var calendarWindow = new RentalCalendar();
-            calendarWindow.Show();
-        }
-
-        private void ReportsButton_Click(object sender, RoutedEventArgs e)
-        {
-            var reportsWindow = new Reports();
-            reportsWindow.Show();
-        }
-
-        private void NewRentalButton_Click(object sender, RoutedEventArgs e)
-        {
-            var newRentalWindow = new NewRental();
-            var result = newRentalWindow.ShowDialog();
-
-            if (result == true)
+            switch (pageKey)
             {
-                MessageBox.Show("Аренда создана!", "Успех",
-                    MessageBoxButton.OK, MessageBoxImage.Information);
+                case "Catalog":
+                    PageTitleText.Text = "Каталог оборудования";
+                    AddHeaderButton("+ Добавить оборудование", () =>
+                    {
+                        var addWindow = App.Services.GetRequiredService<AddEquipmentWindow>();
+                        addWindow.ShowDialog();
+                        // TODO: обновить каталог после закрытия
+                    });
+                    AddHeaderButton("Фильтры", () => { /* TODO */ });
+                    AddHeaderButton("Экспорт", () => { /* TODO */ });
+                    break;
+
+                case "Calendar":
+                    PageTitleText.Text = "Календарь аренды";
+                    AddHeaderButton("Новое оборудование", () =>
+                    {
+                        var addWindow = App.Services.GetRequiredService<AddEquipmentWindow>();
+                        addWindow.ShowDialog();
+                    });
+                    break;
+
+                case "Reports":
+                    PageTitleText.Text = "Отчеты и аналитика";
+                    AddHeaderButton("За месяц", () => { /* TODO */ });
+                    AddHeaderButton("Экспорт", () => { /* TODO */ });
+                    break;
             }
+        }
+
+        private void AddHeaderButton(string text, System.Action onClick)
+        {
+            var button = new Button
+            {
+                Content = text,
+                Style = (Style)FindResource("HeaderButtonStyle")
+            };
+            button.Click += (s, e) => onClick();
+            ActionButtonsPanel.Children.Add(button);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace SolarRent
@@ -33,9 +34,9 @@ namespace SolarRent
             }
 
             // Открываем главную панель для всех ролей
-            var mainDashboard = new MainDashboardWindow();
-            mainDashboard.Show();
-            this.Close(); // Закрываем окно входа
+            var mainWindow = App.Services.GetRequiredService<MainWindow>();
+            mainWindow.Show();
+            this.Close();
         }
     }
 }

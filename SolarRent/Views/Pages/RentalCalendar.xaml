@@ -1,13 +1,10 @@
-﻿<Window x:Class="SolarRent.RentalCalendar"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="SolarRent - Календарь аренды" 
-        Height="700" 
-        Width="1200"
-        WindowStartupLocation="CenterScreen"
-        Background="#F5F5F5">
+﻿<Page x:Class="SolarRent.Views.Pages.RentalCalendar"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="Календарь аренды"
+      Background="#F5F5F5">
 
-    <Window.Resources>
+    <Page.Resources>
         <!-- Основные цвета -->
         <SolidColorBrush x:Key="PrimaryBlue" Color="#2E2EFF"/>
         <SolidColorBrush x:Key="ActiveBrush" Color="#4DD0E1"/>
@@ -146,34 +143,15 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
-    </Window.Resources>
+    </Page.Resources>
 
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
-        <!-- Заголовок -->
-        <Border Grid.Row="0" Background="{StaticResource PrimaryBlue}" Padding="20,15">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-
-                <TextBlock Grid.Column="0" 
-                           Text="Календарь аренды" 
-                           Style="{StaticResource HeaderTitleStyle}"/>
-
-                <Button Grid.Column="1" 
-        Content="Новое оборудование" 
-        Style="{StaticResource PrimaryButtonStyle}" 
-        Click="AddEquipmentButton_Click"/>
-            </Grid>
-        </Border>
-
-        <!-- Основной контент -->
+            <!-- Основной контент -->
         <Grid Grid.Row="1" Margin="20">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2*"/>
@@ -567,4 +545,4 @@
             </Border>
         </Grid>
     </Grid>
-</Window>
+</Page>

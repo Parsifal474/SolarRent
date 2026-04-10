@@ -10,6 +10,8 @@ using SolarRent.Data.Repositories;
 using SolarRent.Services;
 using SolarRent.ViewModels;
 using SolarRent.Views;
+using SolarRent.Services.Navigation;
+using SolarRent.Views.Pages;
 
 namespace SolarRent
 {
@@ -54,13 +56,18 @@ namespace SolarRent
 
                     // === Окна (Transient — можно открывать/закрывать сколько угодно) ===
                     services.AddTransient<LoginWindow>();
-                    services.AddTransient<MainDashboardWindow>();
-                    services.AddTransient<Catalog>();
                     services.AddTransient<AddClient>();
                     services.AddTransient<AddEquipmentWindow>();
                     services.AddTransient<NewRental>();
-                    services.AddTransient<RentalCalendar>();
-                    services.AddTransient<Reports>();
+
+                    // === Страницы ===
+                    services.AddTransient<Views.Pages.Catalog>();
+                    services.AddTransient<Views.Pages.RentalCalendar>();
+                    services.AddTransient<Views.Pages.Reports>();
+
+                    services.AddSingleton<MainWindow>();
+
+                    services.AddSingleton<Services.Navigation.INavigationService, Services.Navigation.NavigationService>();
                 })
                 .Build();
         }
