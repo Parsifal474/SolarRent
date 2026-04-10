@@ -186,6 +186,74 @@ namespace SolarRent.Migrations
                     b.ToTable("RentalOrders");
                 });
 
+            modelBuilder.Entity("SolarRent.Models.SaleItemRecord", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("EquipmentId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("SaleRecordId")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasColumnType("numeric");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EquipmentId");
+
+                    b.HasIndex("SaleRecordId");
+
+                    b.ToTable("SaleItemRecords");
+                });
+
+            modelBuilder.Entity("SolarRent.Models.SaleRecord", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ClientId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("ManagedById")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("ManagedByUserId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PaymentMethod")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("SaleDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("numeric");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClientId");
+
+                    b.HasIndex("ManagedById");
+
+                    b.ToTable("SaleRecords");
+                });
+
             modelBuilder.Entity("SolarRent.Models.User", b =>
                 {
                     b.Property<int>("Id")
@@ -253,6 +321,42 @@ namespace SolarRent.Migrations
                     b.Navigation("ManagedBy");
                 });
 
+            modelBuilder.Entity("SolarRent.Models.SaleItemRecord", b =>
+                {
+                    b.HasOne("SolarRent.Models.Equipment", "Equipment")
+                        .WithMany()
+                        .HasForeignKey("EquipmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SolarRent.Models.SaleRecord", "SaleRecord")
+                        .WithMany("Items")
+                        .HasForeignKey("SaleRecordId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Equipment");
+
+                    b.Navigation("SaleRecord");
+                });
+
+            modelBuilder.Entity("SolarRent.Models.SaleRecord", b =>
+                {
+                    b.HasOne("SolarRent.Models.Client", "Client")
+                        .WithMany()
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SolarRent.Models.User", "ManagedBy")
+                        .WithMany()
+                        .HasForeignKey("ManagedById");
+
+                    b.Navigation("Client");
+
+                    b.Navigation("ManagedBy");
+                });
+
             modelBuilder.Entity("SolarRent.Models.Client", b =>
                 {
                     b.Navigation("Orders");
@@ -263,6 +367,11 @@ namespace SolarRent.Migrations
                     b.Navigation("Defects");
 
                     b.Navigation("Rentals");
+                });
+
+            modelBuilder.Entity("SolarRent.Models.SaleRecord", b =>
+                {
+                    b.Navigation("Items");
                 });
 #pragma warning restore 612, 618
         }

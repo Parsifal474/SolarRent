@@ -49,6 +49,7 @@ namespace SolarRent
                     services.AddScoped<IAuthService, AuthService>();
                     services.AddScoped<ICalendarService, CalendarService>();
                     services.AddScoped<IReportService, ReportService>();
+                    services.AddScoped<ISaleService, SaleService>();
 
                     // === 🔹 Навигация ===
                     services.AddSingleton<INavigationService, NavigationService>();
@@ -58,6 +59,8 @@ namespace SolarRent
                     services.AddTransient<RentalCalendarViewModel>();
                     services.AddTransient<ClientsViewModel>();
                     services.AddTransient<ReportsViewModel>();
+                    services.AddTransient<LeaseAcceptanceViewModel>();
+                    services.AddTransient<SalesHistoryViewModel>();
 
                     // === 🔹 Страницы (Page) — для навигации в Frame ===
                     services.AddTransient<Views.Pages.Catalog>();
@@ -66,27 +69,15 @@ namespace SolarRent
                     services.AddTransient<Views.Pages.Clients>();
                     services.AddTransient<Views.Pages.SettingsPage>();
                     services.AddTransient<Views.Pages.Sale>();
-                    services.AddTransient<Views.Pages.Lease_issue>();      // 🔥 Выдача аренды
-                    services.AddTransient<Views.Pages.Lease_acceptance>(); // 🔥 Приемка аренды
+                    services.AddTransient<Views.Pages.Lease_issue>();
+                    services.AddTransient<Views.Pages.Lease_acceptance>();
 
                     // === 🔹 Окна (Window) — модальные диалоги ===
                     services.AddTransient<LoginWindow>();
                     services.AddTransient<MainWindow>();
                     services.AddTransient<AddEquipmentWindow>();
-                    services.AddTransient<EditEquipmentWindow>();         // 🔥 Новое окно
                     services.AddTransient<AddClient>();
-                    services.AddTransient<NewRental>();
                     services.AddTransient<RegisterWindow>();
-                    services.AddTransient<DayEventsWindow>();
-                    services.AddTransient<ClientOrdersWindow>();
-                    services.AddTransient<Sale>();
-                    // После других ViewModel
-                    services.AddTransient<LeaseAcceptanceViewModel>();
-
-
-                    // В ConfigureServices добавить:
-                    services.AddScoped<ISaleService, SaleService>();
-                    services.AddTransient<SalesHistoryViewModel>();
                     services.AddTransient<SalesHistoryWindow>();
                 })
                 .Build();

@@ -15,6 +15,8 @@ namespace SolarRent.ViewModels
     public class SaleViewModel : INotifyPropertyChanged
     {
         private readonly IEquipmentService _equipmentService;
+        private readonly ISaleService _saleService;
+        private readonly IClientService _clientService;
 
         // 🔥 Пагинация
         private const int PageSize = 8;
@@ -76,13 +78,12 @@ namespace SolarRent.ViewModels
         public ICommand NextPageCommand { get; }
         public ICommand CheckoutCommand { get; }
 
-
-        private readonly ISaleService _saleService;
-        private readonly IClientService _clientService;
-
-        public SaleViewModel(IEquipmentService equipmentService)
+        public SaleViewModel(IEquipmentService equipmentService, ISaleService saleService, IClientService clientService)
         {
             _equipmentService = equipmentService;
+            _saleService = saleService;
+            _clientService = clientService;
+
             LoadCommand = new RelayCommand(async () => await LoadEquipmentAsync());
             SearchCommand = new RelayCommand(async () => await SearchAsync());
             AddToCartCommand = new RelayCommand<SaleItem>(AddToCart);
@@ -151,64 +152,6 @@ namespace SolarRent.ViewModels
             OnPropertyChanged(nameof(PageInfo));
         }
 
-
-        //private async void Checkout()
-        //{
-        //    if (Cart.Count == 0)
-        //    {
-        //        MessageBox.Show("Корзина пуста!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
-        //        return;
-        //    }
-
-        //    // Выбор клиента (можно добавить диалог выбора)
-        //    var clients = await _clientService.GetAllClientsAsync();
-        //    var client = clients.FirstOrDefault();
-        //    if (client == null)
-        //    {
-        //        MessageBox.Show("Нет клиентов в базе. Сначала добавьте клиента.", "Ошибка",
-        //            MessageBoxButton.OK, MessageBoxImage.Warning);
-        //        return;
-        //    }
-
-        //    var result = MessageBox.Show(
-        //        $"Оформить продажу на сумму {CartTotal:N0} ₽?\nКлиент: {client.FullName}",
-        //        "Подтверждение",
-        //        MessageBoxButton.YesNo,
-        //        MessageBoxImage.Question);
-
-        //    if (result == MessageBoxResult.Yes)
-        //    {
-        //        try
-        //        {
-        //            var sale = new SaleRecord
-        //            {
-        //                ClientId = client.Id,
-        //                TotalAmount = CartTotal,
-        //                PaymentMethod = "Наличные"
-        //            };
-
-        //            var items = Cart.Select(item => new SaleItemRecord
-        //            {
-        //                EquipmentId = item.Id,
-        //                Quantity = item.Quantity,
-        //                UnitPrice = item.Price
-        //            }).ToList();
-
-        //            await _saleService.CreateSaleAsync(sale, items);
-
-        //            MessageBox.Show($"✅ Продажа оформлена!\nНомер: #{sale.Id}\nСумма: {CartTotal:N0} ₽",
-        //                "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
-
-        //            Cart.Clear();
-        //            OnPropertyChanged(nameof(CartTotal));
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            MessageBox.Show($"❌ Ошибка: {ex.Message}", "Ошибка",
-        //                MessageBoxButton.OK, MessageBoxImage.Error);
-        //        }
-        //    }
-        //}
         // 🔥 Добавить в корзину
         private void AddToCart(SaleItem item)
         {
@@ -240,30 +183,65 @@ namespace SolarRent.ViewModels
             }
         }
 
-        // 🔥 Оформление продажи
-        private void Checkout()
+        // 🔥 Оформление продажи с сохранением в БД
+        private async void Checkout()
         {
             if (Cart.Count == 0)
             {
-                System.Windows.MessageBox.Show("Корзина пуста!", "Ошибка",
-                    System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
+                MessageBox.Show("Корзина пуста!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            var result = System.Windows.MessageBox.Show(
-                $"Оформить продажу на сумму {CartTotal:N0} ₽?\n\nТоваров: {Cart.Count}",
-                "Подтверждение",
-                System.Windows.MessageBoxButton.YesNo,
-                System.Windows.MessageBoxImage.Question);
-
-            if (result == System.Windows.MessageBoxResult.Yes)
+            // Получаем список клиентов
+            var clients = await _clientService.GetAllClientsAsync();
+            var client = clients.FirstOrDefault();
+            if (client == null)
             {
-                // TODO: Сохранить продажу в БД
-                System.Windows.MessageBox.Show($"✅ Продажа оформлена!\nСумма: {CartTotal:N0} ₽", "Успех",
-                    System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+                MessageBox.Show("Нет клиентов в базе. Сначала добавьте клиента.", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
 
-                Cart.Clear();
-                OnPropertyChanged(nameof(CartTotal));
+            var result = MessageBox.Show(
+                $"Оформить продажу на сумму {CartTotal:N0} ₽?\n\nКлиент: {client.FullName}\nТоваров: {Cart.Count}",
+                "Подтверждение",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                try
+                {
+                    var sale = new SaleRecord
+                    {
+                        ClientId = client.Id,
+                        TotalAmount = CartTotal,
+                        PaymentMethod = "Наличные"
+                    };
+
+                    var items = Cart.Select(item => new SaleItemRecord
+                    {
+                        EquipmentId = item.Id,
+                        Quantity = item.Quantity,
+                        UnitPrice = item.Price
+                    }).ToList();
+
+                    await _saleService.CreateSaleAsync(sale, items);
+
+                    MessageBox.Show($"✅ Продажа оформлена!\nНомер: #{sale.Id}\nСумма: {CartTotal:N0} ₽",
+                        "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                    Cart.Clear();
+                    OnPropertyChanged(nameof(CartTotal));
+
+                    // Обновляем список оборудования (чтобы скрыть проданное)
+                    await LoadEquipmentAsync();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"❌ Ошибка при сохранении: {ex.Message}", "Ошибка",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
 
@@ -363,7 +341,4 @@ namespace SolarRent.ViewModels
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
-
-   
-    
 }
