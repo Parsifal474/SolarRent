@@ -9,7 +9,6 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Input;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace SolarRent.ViewModels
@@ -30,7 +29,6 @@ namespace SolarRent.ViewModels
         [ObservableProperty]
         private bool _isLoading;
 
-        // Статистика
         [ObservableProperty]
         private int _totalOrders;
 
@@ -96,6 +94,7 @@ namespace SolarRent.ViewModels
         private async Task AddClientAsync()
         {
             var addWindow = App.Services.GetRequiredService<AddClient>();
+            addWindow.EditingClient = null; // режим добавления
             if (addWindow.ShowDialog() == true)
             {
                 await LoadDataAsync();
@@ -106,9 +105,44 @@ namespace SolarRent.ViewModels
         private async Task EditClientAsync(Client? client)
         {
             if (client == null) return;
-            // TODO: открыть окно редактирования
-            MessageBox.Show("Редактирование клиента (в разработке)");
-            await Task.CompletedTask;
+
+            var editWindow = App.Services.GetRequiredService<AddClient>();
+            editWindow.EditingClient = client; // передаём клиента для редактирования
+            if (editWindow.ShowDialog() == true)
+            {
+                await LoadDataAsync();
+            }
+        }
+
+        [RelayCommand]
+        private async Task DeleteClientAsync(Client? client)
+        {
+            if (client == null) return;
+
+            var result = MessageBox.Show(
+                $"Вы уверены, что хотите удалить клиента \"{client.FullName}\"?",
+                "Подтверждение удаления",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                try
+                {
+                    IsLoading = true;
+                    await _clientService.DeleteClientAsync(client.Id);
+                    await LoadDataAsync();
+                    MessageBox.Show("Клиент успешно удалён.", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ошибка при удалении: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                finally
+                {
+                    IsLoading = false;
+                }
+            }
         }
 
         [RelayCommand]

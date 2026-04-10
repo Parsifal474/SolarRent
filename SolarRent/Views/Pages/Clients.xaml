@@ -11,8 +11,8 @@
 
     <Page.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
-
-        <!-- Конвертер для кнопки чёрного списка -->
+        <vm:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+        <vm:NullToCollapsedConverter x:Key="NullToCollapsedConverter"/>
         <vm:BlacklistButtonConverter x:Key="BlacklistButtonConverter"/>
 
         <Style x:Key="StatCardStyle" TargetType="Border">
@@ -147,7 +147,7 @@
             <Border Grid.Row="1" Background="White" CornerRadius="8" Padding="20">
                 <Grid>
                     <!-- Содержимое при выбранном клиенте -->
-                    <Grid Visibility="{Binding SelectedClient, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <Grid Visibility="{Binding SelectedClient, Converter={StaticResource NullToVisibilityConverter}}">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
@@ -214,6 +214,11 @@
                                     CommandParameter="{Binding SelectedClient}"
                                     Background="#E5E7EB" Foreground="#374151" FontSize="14"
                                     BorderThickness="0" Cursor="Hand"/>
+                            <Button Content="Удалить" Width="100" Height="35" Margin="0,0,10,0"
+                                    Command="{Binding DeleteClientCommand}"
+                                    CommandParameter="{Binding SelectedClient}"
+                                    Background="#EF5350" Foreground="White" FontSize="14"
+                                    BorderThickness="0" Cursor="Hand"/>
                             <Button Content="{Binding SelectedClient.IsBlacklisted, Converter={StaticResource BlacklistButtonConverter}}" 
                                     Width="140" Height="35"
                                     Command="{Binding ToggleBlacklistCommand}"
@@ -226,7 +231,7 @@
                     <!-- Placeholder, если клиент не выбран -->
                     <TextBlock Text="Выберите клиента из списка" FontSize="16" Foreground="#999"
                                HorizontalAlignment="Center" VerticalAlignment="Center"
-                               Visibility="{Binding SelectedClient, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Inverse}"/>
+                               Visibility="{Binding SelectedClient, Converter={StaticResource NullToCollapsedConverter}}"/>
                 </Grid>
             </Border>
         </Grid>

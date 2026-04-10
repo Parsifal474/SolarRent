@@ -93,13 +93,13 @@ namespace SolarRent
                     AddHeaderButton("+ Добавить клиента", () =>
                     {
                         var addWindow = App.Services.GetRequiredService<AddClient>();
+                        addWindow.EditingClient = null;
                         addWindow.Closed += (s, e) =>
                         {
                             if (addWindow.DialogResult == true && MainFrame.Content is Clients clientsPage)
                             {
                                 if (clientsPage.DataContext is ClientsViewModel vm)
                                 {
-                                    // Вызываем команду обновления данных
                                     vm.LoadDataCommand?.Execute(null);
                                 }
                             }
@@ -111,10 +111,6 @@ namespace SolarRent
                         if (MainFrame.Content is Clients clientsPage && clientsPage.DataContext is ClientsViewModel vm)
                         {
                             vm.ExportToCsvCommand?.Execute(null);
-                        }
-                        else
-                        {
-                            MessageBox.Show("Не удалось получить данные для экспорта.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                         }
                     });
                     break;

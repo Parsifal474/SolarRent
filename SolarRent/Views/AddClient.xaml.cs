@@ -9,17 +9,55 @@ namespace SolarRent
     public partial class AddClient : Window
     {
         private readonly IClientService _clientService;
+        private Client? _editingClient;
 
-        // Конструктор с DI
+        // Свойство для определения режима редактирования
+        public Client? EditingClient
+        {
+            get => _editingClient;
+            set
+            {
+                _editingClient = value;
+                if (value != null)
+                {
+                    // Заполняем поля данными клиента
+                    txtName.Text = value.FullName;
+                    txtINN.Text = value.TaxId ?? "";
+                    txtKPP.Text = ""; // KPP нет в модели, можно убрать или добавить в будущем
+                    txtPhone.Text = value.Phone;
+                    txtEmail.Text = value.Email;
+                    txtAdress.Text = value.Address ?? "";
+                    chkIsBlacklisted.IsChecked = value.IsBlacklisted;
+                    Title = "Редактирование клиента";
+                }
+                else
+                {
+                    ClearFields();
+                    Title = "Добавить клиента";
+                }
+            }
+        }
+
         public AddClient(IClientService clientService)
         {
             InitializeComponent();
             _clientService = clientService;
         }
 
-        // Конструктор для дизайнера (если нужен)
+        // Конструктор для дизайнера
         public AddClient() : this(App.Services.GetRequiredService<IClientService>())
         {
+        }
+
+        private void ClearFields()
+        {
+            txtName.Text = "";
+            txtINN.Text = "";
+            txtKPP.Text = "";
+            txtPhone.Text = "";
+            txtEmail.Text = "";
+            txtAdress.Text = "";
+            chkIsBlacklisted.IsChecked = false;
         }
 
         private async void SaveButton_Click(object sender, RoutedEventArgs e)
@@ -43,22 +81,40 @@ namespace SolarRent
 
             try
             {
-                var client = new Client
+                if (_editingClient == null)
                 {
-                    FullName = txtName.Text.Trim(),
-                    Phone = txtPhone.Text.Trim(),
-                    Email = txtEmail.Text.Trim(),
-                    Address = txtAdress.Text.Trim(),
-                    TaxId = txtINN.Text.Trim(),
-                    CompanyName = null, // можно добавить отдельное поле в UI
-                    Type = string.IsNullOrWhiteSpace(txtINN.Text) ? "Individual" : "Company",
-                    IsBlacklisted = chkIsBlacklisted.IsChecked ?? false
-                };
+                    // Режим добавления
+                    var client = new Client
+                    {
+                        FullName = txtName.Text.Trim(),
+                        Phone = txtPhone.Text.Trim(),
+                        Email = txtEmail.Text.Trim(),
+                        Address = txtAdress.Text.Trim(),
+                        TaxId = txtINN.Text.Trim(),
+                        CompanyName = null,
+                        Type = string.IsNullOrWhiteSpace(txtINN.Text) ? "Individual" : "Company",
+                        IsBlacklisted = chkIsBlacklisted.IsChecked ?? false
+                    };
+                    await _clientService.AddClientAsync(client);
+                    MessageBox.Show($"Клиент успешно добавлен!\n\nName: {client.FullName}\nPhone: {client.Phone}",
+                        "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else
+                {
+                    // Режим редактирования
+                    _editingClient.FullName = txtName.Text.Trim();
+                    _editingClient.Phone = txtPhone.Text.Trim();
+                    _editingClient.Email = txtEmail.Text.Trim();
+                    _editingClient.Address = txtAdress.Text.Trim();
+                    _editingClient.TaxId = txtINN.Text.Trim();
+                    _editingClient.Type = string.IsNullOrWhiteSpace(txtINN.Text) ? "Individual" : "Company";
+                    _editingClient.IsBlacklisted = chkIsBlacklisted.IsChecked ?? false;
+                    // CompanyName оставляем без изменений (можно добавить отдельное поле при необходимости)
 
-                await _clientService.AddClientAsync(client);
-
-                MessageBox.Show($"Клиент успешно добавлен!\n\nName: {client.FullName}\nPhone: {client.Phone}",
-                    "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                    await _clientService.UpdateClientAsync(_editingClient);
+                    MessageBox.Show($"Клиент успешно обновлён!\n\nName: {_editingClient.FullName}\nPhone: {_editingClient.Phone}",
+                        "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
 
                 this.DialogResult = true;
                 this.Close();
