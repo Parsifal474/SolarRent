@@ -309,10 +309,10 @@
                             При повреждении оборудования залог не возвращается
                         </TextBlock>
 
-                        <Button Grid.Column="1" Content="Подтвердить возврат" 
-                                Command="{Binding AcceptReturnCommand}"
-                                Style="{StaticResource PrimaryButtonStyle}"
-                                IsEnabled="{Binding HasOrder}"/>
+                        <Button Content="Подтвердить возврат" 
+                            Command="{Binding AcceptReturnCommand}"
+                            Style="{StaticResource PrimaryButtonStyle}"
+                            IsEnabled="{Binding HasOrder}"/>
                     </Grid>
                 </StackPanel>
             </Border>

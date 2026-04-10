@@ -433,7 +433,7 @@ namespace SolarRent.ViewModels
     // EquipmentItem и RelayCommand остаются без изменений...
     public class EquipmentItem : INotifyPropertyChanged
     {
-        private readonly CatalogViewModel _parentViewModel;
+        private readonly CatalogViewModel? _parentViewModel;
 
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
@@ -456,6 +456,8 @@ namespace SolarRent.ViewModels
         }
 
         public EquipmentItem() { }
+
+
 
         public ICommand DeleteCommand => new RelayCommand(() =>
         {
@@ -487,41 +489,6 @@ namespace SolarRent.ViewModels
         protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-    }
-
-    public class RelayCommand : ICommand
-    {
-        private readonly Action _execute;
-        private readonly Action<object?>? _executeWithParam;
-        private readonly Func<bool>? _canExecute;
-
-        public RelayCommand(Action execute, Func<bool>? canExecute = null)
-        {
-            _execute = execute ?? throw new ArgumentNullException(nameof(execute));
-            _canExecute = canExecute;
-        }
-
-        public RelayCommand(Action<object?> executeWithParam, Func<bool>? canExecute = null)
-        {
-            _executeWithParam = executeWithParam ?? throw new ArgumentNullException(nameof(executeWithParam));
-            _canExecute = canExecute;
-        }
-
-        public event EventHandler? CanExecuteChanged
-        {
-            add => CommandManager.RequerySuggested += value;
-            remove => CommandManager.RequerySuggested -= value;
-        }
-
-        public bool CanExecute(object? parameter) => _canExecute?.Invoke() ?? true;
-
-        public void Execute(object? parameter)
-        {
-            if (_executeWithParam != null)
-                _executeWithParam(parameter);
-            else
-                _execute();
         }
     }
 }

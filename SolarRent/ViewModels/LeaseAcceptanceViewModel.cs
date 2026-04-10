@@ -1,10 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;  // ← ВАЖНО: именно этот using
+using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
 using SolarRent.Data;
 using SolarRent.Models;
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -39,17 +40,19 @@ namespace SolarRent.ViewModels
         [ObservableProperty]
         private decimal _totalPenalty;
 
-        // Используем IRelayCommand из CommunityToolkit
         public IRelayCommand SearchOrderCommand { get; }
         public IRelayCommand AcceptReturnCommand { get; }
 
         public LeaseAcceptanceViewModel(AppDbContext context)
         {
+            Debug.WriteLine("LeaseAcceptanceViewModel created");
             _context = context;
 
-            // Используем CommunityToolkit.Mvvm.Input.RelayCommand
-            SearchOrderCommand = new CommunityToolkit.Mvvm.Input.RelayCommand(async () => await SearchOrderAsync());
-            AcceptReturnCommand = new CommunityToolkit.Mvvm.Input.RelayCommand(async () => await AcceptReturnAsync(), () => HasOrder && !IsLoading);
+            SearchOrderCommand = new RelayCommand(async () => await SearchOrderAsync());
+            AcceptReturnCommand = new RelayCommand(
+                async () => await AcceptReturnAsync(),
+                () => HasOrder && !IsLoading
+            );
         }
 
         private async Task SearchOrderAsync()
@@ -62,6 +65,7 @@ namespace SolarRent.ViewModels
 
             IsLoading = true;
             StatusMessage = "🔍 Поиск заказа...";
+            Debug.WriteLine($"SearchOrderAsync started, orderId={orderId}");
 
             try
             {
@@ -90,6 +94,7 @@ namespace SolarRent.ViewModels
 
                 CurrentOrder = order;
                 HasOrder = true;
+                Debug.WriteLine($"Order found, HasOrder={HasOrder}");
 
                 EquipmentItems.Clear();
                 EquipmentItems.Add(new ReturnEquipmentItem
@@ -104,16 +109,20 @@ namespace SolarRent.ViewModels
                 });
 
                 CalculatePenalty();
-
                 StatusMessage = $"✅ Заказ #{orderId} найден. Проверьте состояние оборудования.";
             }
             catch (Exception ex)
             {
                 StatusMessage = $"❌ Ошибка: {ex.Message}";
+                Debug.WriteLine($"ERROR in SearchOrderAsync: {ex.Message}");
+                HasOrder = false;
             }
             finally
             {
                 IsLoading = false;
+                Debug.WriteLine($"SearchOrderAsync finished, IsLoading={IsLoading}, HasOrder={HasOrder}");
+                // Принудительно обновляем состояние команды
+                (AcceptReturnCommand as RelayCommand)?.NotifyCanExecuteChanged();
             }
         }
 
@@ -143,7 +152,12 @@ namespace SolarRent.ViewModels
 
         private async Task AcceptReturnAsync()
         {
-            if (CurrentOrder == null) return;
+            Debug.WriteLine("AcceptReturnAsync called");
+            if (CurrentOrder == null)
+            {
+                Debug.WriteLine("CurrentOrder is null");
+                return;
+            }
 
             var damagedItems = EquipmentItems.Where(i => i.IsDamaged).ToList();
             if (damagedItems.Any())
@@ -162,6 +176,7 @@ namespace SolarRent.ViewModels
             }
 
             IsLoading = true;
+            (AcceptReturnCommand as RelayCommand)?.NotifyCanExecuteChanged();
 
             try
             {
@@ -206,11 +221,13 @@ namespace SolarRent.ViewModels
             catch (Exception ex)
             {
                 StatusMessage = $"❌ Ошибка при сохранении: {ex.Message}";
+                Debug.WriteLine($"ERROR in AcceptReturnAsync: {ex.Message}");
                 MessageBox.Show($"Ошибка: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
                 IsLoading = false;
+                (AcceptReturnCommand as RelayCommand)?.NotifyCanExecuteChanged();
             }
         }
 

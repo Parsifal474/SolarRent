@@ -109,7 +109,7 @@ namespace SolarRent
             }
 
             // Запуск окна входа
-            var loginWindow = _host.Services.GetRequiredService<LoginWindow>();
+            var loginWindow = Services.GetRequiredService<LoginWindow>();
             loginWindow.Show();
 
             base.OnStartup(e);
