@@ -43,6 +43,7 @@ namespace SolarRent
                     services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
                     // === 🔹 Сервисы ===
+                    services.AddTransient<SaleViewModel>();
                     services.AddScoped<IEquipmentService, EquipmentService>();
                     services.AddScoped<IClientService, ClientService>();
                     services.AddScoped<IAuthService, AuthService>();
