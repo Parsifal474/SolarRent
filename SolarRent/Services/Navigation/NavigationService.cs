@@ -31,11 +31,14 @@ namespace SolarRent.Services.Navigation
 
             Page page = pageKey switch
             {
-                "Catalog" => _serviceProvider.GetRequiredService<Catalog>(),
-                "Calendar" => _serviceProvider.GetRequiredService<RentalCalendar>(),
-                "Reports" => _serviceProvider.GetRequiredService<Reports>(),
-                "Clients" => _serviceProvider.GetRequiredService<Clients>(),
-                "Settings" => _serviceProvider.GetRequiredService<SettingsPage>(),
+                "Catalog" => _serviceProvider.GetRequiredService<Views.Pages.Catalog>(),
+                "Calendar" => _serviceProvider.GetRequiredService<Views.Pages.RentalCalendar>(),
+                "Reports" => _serviceProvider.GetRequiredService<Views.Pages.Reports>(),
+                "Clients" => _serviceProvider.GetRequiredService<Views.Pages.Clients>(),
+                "Settings" => _serviceProvider.GetRequiredService<Views.Pages.SettingsPage>(),
+                "Sale" => _serviceProvider.GetRequiredService<Views.Pages.Sale>(),
+                "LeaseIssue" => _serviceProvider.GetRequiredService<Views.Pages.Lease_issue>(),
+                "LeaseAcceptance" => _serviceProvider.GetRequiredService<Views.Pages.Lease_acceptance>(),
                 _ => throw new ArgumentException($"Unknown page: {pageKey}")
             };
 

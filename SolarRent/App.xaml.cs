@@ -8,86 +8,77 @@ using Microsoft.Extensions.Hosting;
 using SolarRent.Data;
 using SolarRent.Data.Repositories;
 using SolarRent.Services;
+using SolarRent.Services.Navigation;
 using SolarRent.ViewModels;
 using SolarRent.Views;
-using SolarRent.Services.Navigation;
 using SolarRent.Views.Pages;
 
 namespace SolarRent
 {
     public partial class App : Application
     {
-        private static IHost? _host; //изменено ?
+        private static IHost? _host;
 
-        // 🔹 Статический доступ к сервисам
         public static IServiceProvider Services => _host?.Services
-            ?? throw new InvalidOperationException("Хост не инициализирован"); // изменено, проверка by рыжик
+            ?? throw new InvalidOperationException("Хост не инициализирован");
 
         public App()
         {
-            // 🔹 Настройка конфигурации
             var configuration = new ConfigurationBuilder()
-                .SetBasePath(AppContext.BaseDirectory)  // ✅ Правильный путь для WPF
+                .SetBasePath(AppContext.BaseDirectory)
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .Build();
 
-            // 🔹 Настройка хоста и DI
             _host = Host.CreateDefaultBuilder()
                 .ConfigureServices((context, services) =>
                 {
-                    // === База данных ===
+                    // === 🔹 База данных ===
                     var connectionString = configuration.GetConnectionString("DefaultConnection")
                         ?? "Host=localhost;Port=5432;Database=solarrent;Username=postgres;Password=POPO";
 
                     services.AddDbContext<AppDbContext>(options =>
                         options.UseNpgsql(connectionString));
 
-                    // === Репозитории ===
+                    // === 🔹 Репозитории ===
                     services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
-                    // === Сервисы ===
+                    // === 🔹 Сервисы ===
                     services.AddScoped<IEquipmentService, EquipmentService>();
                     services.AddScoped<IClientService, ClientService>();
-                    services.AddTransient<EditEquipmentWindow>();
-                    // services.AddScoped<IRentalOrderService, RentalOrderService>();
-
-                    // === ViewModel (Transient — новый экземпляр для каждого окна) ===
-                    services.AddTransient<CatalogViewModel>();
                     services.AddScoped<IAuthService, AuthService>();
-                    services.AddTransient<RegisterWindow>();
-                    // services.AddTransient<MainViewModel>();
-                    // services.AddTransient<LoginViewModel>();
+                    services.AddScoped<ICalendarService, CalendarService>();
+                    services.AddScoped<IReportService, ReportService>();
 
-                    // === Окна (Transient — можно открывать/закрывать сколько угодно) ===
-                    services.AddTransient<LoginWindow>();
-                    services.AddTransient<AddClient>();
-                    services.AddTransient<AddEquipmentWindow>();
-                    services.AddTransient<NewRental>();
+                    // === 🔹 Навигация ===
+                    services.AddSingleton<INavigationService, NavigationService>();
 
-                    // === Страницы ===
+                    // === 🔹 ViewModel ===
+                    services.AddTransient<CatalogViewModel>();
+                    services.AddTransient<RentalCalendarViewModel>();
+                    services.AddTransient<ClientsViewModel>();
+                    services.AddTransient<ReportsViewModel>();
+
+                    // === 🔹 Страницы (Page) — для навигации в Frame ===
                     services.AddTransient<Views.Pages.Catalog>();
                     services.AddTransient<Views.Pages.RentalCalendar>();
                     services.AddTransient<Views.Pages.Reports>();
-
-                    services.AddSingleton<MainWindow>();
-
-                    services.AddSingleton<Services.Navigation.INavigationService, Services.Navigation.NavigationService>();
-
-                    services.AddScoped<ICalendarService, CalendarService>();
-                    services.AddTransient<RentalCalendarViewModel>();
-                    services.AddTransient<DayEventsWindow>();
-
-                    services.AddTransient<Views.DayEventsWindow>();
-
-                    services.AddScoped<IClientService, ClientService>();
-                    services.AddTransient<ClientsViewModel>();
                     services.AddTransient<Views.Pages.Clients>();
-                    services.AddTransient<Views.ClientOrdersWindow>();
-
                     services.AddTransient<Views.Pages.SettingsPage>();
+                    services.AddTransient<Views.Pages.Sale>();
+                    services.AddTransient<Views.Pages.Lease_issue>();      // 🔥 Выдача аренды
+                    services.AddTransient<Views.Pages.Lease_acceptance>(); // 🔥 Приемка аренды
 
-                    services.AddScoped<IReportService, ReportService>();
-                    services.AddTransient<ReportsViewModel>();
+                    // === 🔹 Окна (Window) — модальные диалоги ===
+                    services.AddTransient<LoginWindow>();
+                    services.AddTransient<MainWindow>();
+                    services.AddTransient<AddEquipmentWindow>();
+                    services.AddTransient<EditEquipmentWindow>();         // 🔥 Новое окно
+                    services.AddTransient<AddClient>();
+                    services.AddTransient<NewRental>();
+                    services.AddTransient<RegisterWindow>();
+                    services.AddTransient<DayEventsWindow>();
+                    services.AddTransient<ClientOrdersWindow>();
+                    services.AddTransient<Sale>();
                 })
                 .Build();
         }
@@ -96,30 +87,25 @@ namespace SolarRent
         {
             await _host.StartAsync();
 
-            // 🔹 Инициализация БД (только для разработки!)
+            // Инициализация БД
             using (var scope = _host.Services.CreateScope())
             {
                 try
                 {
                     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-
-                    // ✅ Для продакшена используй миграции:
-                    // await dbContext.Database.MigrateAsync();
-
-                    // 🔹 Для разработки (создаёт БД если нет):
                     await dbContext.Database.EnsureCreatedAsync();
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show(
-                        $"Ошибка подключения к БД:\n{ex.Message}\n\nПроверьте appsettings.json",
+                        $"Ошибка подключения к БД:\n{ex.Message}",
                         "Ошибка базы данных",
                         MessageBoxButton.OK,
                         MessageBoxImage.Error);
                 }
             }
 
-            // 🔹 Запуск окна входа
+            // Запуск окна входа
             var loginWindow = _host.Services.GetRequiredService<LoginWindow>();
             loginWindow.Show();
 
@@ -128,13 +114,11 @@ namespace SolarRent
 
         protected override async void OnExit(ExitEventArgs e)
         {
-            // 🔹 Корректное завершение хоста
             if (_host != null)
             {
                 await _host.StopAsync();
                 _host.Dispose();
             }
-
             base.OnExit(e);
         }
     }

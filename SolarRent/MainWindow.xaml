@@ -130,7 +130,10 @@
             <TabItem Header="Календарь аренды" Style="{StaticResource NavigationTabItemStyle}" Tag="Calendar"/>
             <TabItem Header="Отчёты" Style="{StaticResource NavigationTabItemStyle}" Tag="Reports"/>
             <TabItem Header="Клиенты" Style="{StaticResource NavigationTabItemStyle}" Tag="Clients"/>
-            <TabItem Header="Настройки" Style="{StaticResource NavigationTabItemStyle}" Tag="Settings" ToolTip="Настройки"/>
+            <TabItem Header="Настройки" Style="{StaticResource NavigationTabItemStyle}" Tag="Settings"/>
+            <TabItem Header="Продажа" Style="{StaticResource NavigationTabItemStyle}" Tag="Sale"/>
+            <TabItem Header="Выдача аренды" Style="{StaticResource NavigationTabItemStyle}" Tag="LeaseIssue"/>
+            <TabItem Header="Приемка аренды" Style="{StaticResource NavigationTabItemStyle}" Tag="LeaseAcceptance"/>
         </TabControl>
 
         <!-- ОСНОВНОЙ КОНТЕНТ (Frame) -->
